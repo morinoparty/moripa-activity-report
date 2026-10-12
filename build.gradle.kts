@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
-
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -55,6 +54,9 @@ allprojects {
         maven("https://jitpack.io")
         maven("https://plugins.gradle.org/m2/")
         maven("https://repo.codemc.io/repository/maven-public/")
+        // LibertyBans の API (bans-api) と、それが依存する Omnibus
+        maven("https://mvn-repo.arim.space/affero-gpl3/")
+        maven("https://mvn-repo.arim.space/lesser-gpl3/")
     }
 
     dependencies {

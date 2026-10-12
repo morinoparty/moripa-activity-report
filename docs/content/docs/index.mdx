@@ -1,19 +1,31 @@
 ---
 title: Introduction
-description: MoripaActivityReport Documentation
+description: MoripaActivityReport のドキュメント
 ---
 
 # MoripaActivityReport
 
-MoripaActivityReport is a Minecraft plugin template.
+MoripaActivityReport は、morinoparty のサーバー運営での操作 (アクティビティ) を Discord Webhook に報告する Minecraft プラグインです。
+Paper と Velocity の両方で動作します。
 
-## Features
+## 機能
 
-- Multi-module structure (common, paper, velocity, api)
-- Paper and Velocity support
-- Cloud command framework
-- Koin dependency injection
+| 機能 | 動作環境 | 連携先 | 説明 |
+|------|----------|--------|------|
+| [土地保護の削除](./features/claim) | Paper | GriefPrevention / MoripaUtils | `/deleteclaim <理由>` で土地保護を削除したときに、理由と一緒に報告します。理由に `close #番号` を含めると、MoripaUtils のチケットをクローズします。 |
+| [処罰](./features/punishment) | Velocity | LibertyBans | BAN・ミュート・警告・キックと、その解除を理由と一緒に報告します。 |
 
-## Getting Started
+報告先の Webhook は [設定](./config) で指定します。
 
-Documentation will be added here.
+## コマンド
+
+| コマンド | 動作環境 | 権限 | 説明 |
+|---------|----------|------|------|
+| `/mar reload` | Paper | `moripaactivityreport.reload` (デフォルトは OP のみ) | `config.json` を再読み込みします。 |
+| `/marv reload` | Velocity | `moripaactivityreport.reload` | `config.json` を再読み込みします。 |
+
+Velocity には権限のデフォルト値がないため、`/marv reload` を実行するには LuckPerms などの権限プラグインで権限を付与してください。
+
+## ライセンス
+
+LibertyBans の API (GNU AGPL v3.0 以降) を利用しているため、MoripaActivityReport も GNU AGPL v3.0 以降で公開しています。

@@ -15,23 +15,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
+package party.morino.moripaactivityreport.common.model.config
 
-package party.morino.moripaactivityreport.paper.commands
+import kotlinx.serialization.Serializable
 
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import net.kyori.adventure.text.Component
-import org.incendo.cloud.paper.PaperCommandManager
-
-class ExampleCommand(
-    private val commandManager: PaperCommandManager<CommandSourceStack>,
-) {
-    fun register() {
-        val command = commandManager.commandBuilder("moripaactivityreport")
-            .handler { ctx ->
-                ctx.sender().sender.sendMessage(Component.text("Hello from MoripaActivityReport!"))
-            }
-            .build()
-
-        commandManager.command(command)
-    }
-}
+/**
+ * MoripaActivityReport 全体の設定 (プラグインのデータフォルダにある config.json に対応する)
+ *
+ * Paper / Velocity で同じ形を使い、それぞれのサーバーで報告先を設定する。
+ *
+ * @property webhook 報告を送る Discord Webhook の設定
+ */
+@Serializable
+data class ActivityReportConfig(
+    val webhook: WebhookConfig = WebhookConfig(),
+)

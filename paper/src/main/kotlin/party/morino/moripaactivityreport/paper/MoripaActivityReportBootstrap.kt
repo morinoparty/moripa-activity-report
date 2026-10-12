@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package party.morino.moripaactivityreport.paper
 
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -25,7 +24,7 @@ import io.papermc.paper.plugin.bootstrap.PluginProviderContext
 import org.bukkit.plugin.java.JavaPlugin
 import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.paper.PaperCommandManager
-import party.morino.moripaactivityreport.paper.commands.ExampleCommand
+import party.morino.moripaactivityreport.paper.commands.ReloadCommand
 
 @Suppress("unused", "UnstableApiUsage")
 class MoripaActivityReportBootstrap : PluginBootstrap {
@@ -37,7 +36,7 @@ class MoripaActivityReportBootstrap : PluginBootstrap {
                 .executionCoordinator(ExecutionCoordinator.asyncCoordinator())
                 .buildBootstrapped(context)
 
-        ExampleCommand(commandManager).register()
+        ReloadCommand(commandManager).register()
     }
 
     override fun createPlugin(context: PluginProviderContext): JavaPlugin {

@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
+import xyz.jpenilla.resourcefactory.bukkit.Permission
+import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 plugins {
     java
@@ -32,6 +34,10 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":api"))
     compileOnly(libs.paper.api)
+    // 連携先のプラグインの API。実行時は各プラグインのクラスを joinClasspath で参照するため同梱せず、
+    // MoripaActivityReportLoader にも取得させない (compileOnly は runtimeClasspath に含まれない)
+    compileOnly(libs.griefprevention) { isTransitive = false }
+    compileOnly(libs.moripa.utils.api) { isTransitive = false }
 
     implementation(libs.bundles.commands.paper)
     // cloud-kotlin-coroutines が推移的に持ち込む kotlin-reflect は古い版 (2.0.x) になるため、stdlib と同じ版にそろえる
@@ -120,6 +126,19 @@ sourceSets.main {
             bootstrapper = "$group.moripaactivityreport.paper.MoripaActivityReportBootstrap"
             loader = "$group.moripaactivityreport.paper.MoripaActivityReportLoader"
             apiVersion = "26.2"
+            dependencies {
+                // GriefPrevention は任意依存。先にロードし、joinClasspath で ClaimDeletedEvent などを参照できるようにする
+                server("GriefPrevention", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
+                // MoripaUtils は任意依存。公開 API でチケットをクローズする
+                server("MoripaUtils", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
+            }
+            permissions {
+                // /mar reload で config.json を再読み込みする権限
+                register("moripaactivityreport.reload") {
+                    description = "Allows reloading config.json with /mar reload"
+                    default = Permission.Default.OP
+                }
+            }
         }
     }
 }

@@ -1,194 +1,20 @@
-# PluginTemplateKt
+# MoripaActivityReport
 
-morinoparty の Minecraft プラグインテンプレートです。Paper / Velocity 両対応のマルチモジュール構成になっています。
+morinoparty のサーバー運営での操作 (アクティビティ) を Discord Webhook に報告する Minecraft プラグインです。Paper / Velocity の両方に対応しています。
 
-## モジュール構成
+- **土地保護の削除 (Paper)**: GriefPrevention の `/deleteclaim <理由>` で削除した土地保護を、理由と一緒に報告します。理由に `close #番号` を含めると、[MoripaUtils](https://github.com/morinoparty/moripa-utils) のチケットをクローズします。
+- **処罰 (Velocity)**: LibertyBans の BAN・ミュート・警告・キックと、その解除を理由と一緒に報告します。
 
-| モジュール | 説明 |
-|-----------|------|
-| `common` | Paper/Velocity 共通コード |
-| `paper` | Paper (Bukkit) プラグイン |
-| `velocity` | Velocity プロキシプラグイン |
-| `api` | 外部プラグイン向け公開 API |
+コマンドは Paper が `/mar`、Velocity が `/marv` です。設定や使い方は `docs/content/` のドキュメントを参照してください。
 
-## 技術スタック
-
-- **Kotlin** - 言語
-- **Paper API** 26.2 - Minecraft サーバー API
-- **Velocity API** 4.1 - Minecraft プロキシ API
-- **Cloud** - コマンドフレームワーク (Incendo)
-- **Koin** - 依存性注入
-- **MCCoroutine** - Kotlin Coroutines の Minecraft 統合
-- **ShadowJar** - Fat JAR 生成
-- **Fumadocs** - ドキュメントサイト (Next.js)
-
-## 必要環境
-
-- **Java** 25 (Temurin 推奨)
-- **Gradle** 9.x (Wrapper 同梱)
-- **Node.js** 26+ / **pnpm** 10+ (ドキュメントビルド用)
-- **[Task](https://taskfile.dev/)** (タスクランナー、任意)
-
-## セットアップ
-
-### 1. テンプレートからリポジトリを作成
-
-GitHub の "Use this template" ボタンからリポジトリを作成するか、クローンしてください。
-
-### 2. プロジェクト名の変更
-
-テンプレートのプレースホルダーを自分のプラグイン名に一括置換します。
+## ビルド
 
 ```bash
-# 例: "MoripaActivityReport" を "MyPlugin" に変更する場合
-
-# 1. settings.gradle.kts のルートプロジェクト名
-#    rootProject.name = "MyPlugin"
-
-# 2. パッケージ名の変更
-#    party.morino.moripaactivityreport → party.morino.myplugin
-#    ディレクトリ名も合わせてリネーム
-#    common/build.gradle.kts の basePackage も合わせて変更 (BuildConstants の生成先)
-
-# 3. クラス名の変更
-#    MoripaActivityReport → MyPlugin
-#    MoripaActivityReportAPI → MyPluginAPI
-#    MoripaActivityReportCommon → MyPluginCommon
-
-# 4. 設定ファイルの更新
-#    - paper/build.gradle.kts: main クラスのパス、website URL
-#    - velocity MoripaActivityReport.kt: @Plugin アノテーションの id, name
-#    - .agent/rules/: プロジェクト名、リポジトリ URL (CLAUDE.md / AGENTS.md は task agent で生成)
-#    - docs/app/layout.tsx: メタデータ
-#    - docs/app/layout.config.tsx: タイトル、GitHub URL
-#    - .github/workflows/preview.yml: PROJECT_NAME
-#    - .github/workflows/upload.yml: JAR ファイル名
+task build   # ./gradlew clean build
 ```
 
-### 3. AI エージェント向け指示ファイルの生成
-
-`CLAUDE.md` / `AGENTS.md` は `.agent/rules/` から生成されるファイルで、git には含めていません (`.gitignore` 済み)。
-`.agent/rules/` を編集したら再生成してください。
-
-```bash
-bash .agent/build.sh
-
-# または Task を使用
-task agent
-```
-
-### 4. ビルド
-
-```bash
-# Gradle ビルド
-./gradlew build -x test
-
-# または Task を使用
-task build
-```
-
-### 5. 開発サーバー起動
-
-```bash
-# Paper テストサーバー
-./gradlew :paper:runServer
-
-# または Task を使用
-task run
-```
-
-### 6. ドキュメント開発
-
-```bash
-cd docs
-pnpm install
-pnpm dev
-
-# または Task を使用
-task docs
-```
-
-## 初期化チェックリスト
-
-テンプレートから新しいプラグインを作成する際に行うべき作業の一覧です。
-
-- [ ] リポジトリ名を変更
-- [ ] `settings.gradle.kts` の `rootProject.name` を変更
-- [ ] パッケージ名 `party.morino.moripaactivityreport` を変更
-- [ ] `common/build.gradle.kts` の `basePackage` をパッケージ名に合わせて変更
-- [ ] ソースディレクトリ名をパッケージ名に合わせてリネーム
-- [ ] クラス名 (`MoripaActivityReport`, `MoripaActivityReportAPI`, `MoripaActivityReportCommon`) を変更
-- [ ] `paper/build.gradle.kts` のメインクラスパス・website を変更
-- [ ] `velocity/.../MoripaActivityReport.kt` の `@Plugin` アノテーションを変更
-- [ ] `.agent/rules/` のプロジェクト説明とリポジトリ URL を変更し、`task agent` で `CLAUDE.md` / `AGENTS.md` を生成
-- [ ] `docs/app/layout.tsx` のメタデータを変更
-- [ ] `docs/app/layout.config.tsx` のタイトルと GitHub URL を変更
-- [ ] `docs/app/llms.txt/route.ts` のプラグイン名を変更
-- [ ] `docs/package.json` の `name` を変更
-- [ ] `.github/workflows/preview.yml` の `PROJECT_NAME` を変更
-- [ ] `.github/workflows/upload.yml` の JAR ファイル名を変更
-- [ ] GitHub リポジトリの Settings で GitHub Pages を有効化
-- [ ] GitHub リポジトリの Secrets に S3 認証情報を設定 (プレビュー機能を使う場合)
-- [ ] 不要な初期サンプルコード (`ExampleCommand`) を削除
-- [ ] `config/spotless/license-header.kt` の著者名を変更し、`task license` でヘッダーを付け直す
-
-## Task コマンド一覧
-
-| コマンド | 説明 |
-|---------|------|
-| `task build` | 全モジュールをビルド |
-| `task run` | Paper 開発サーバーを起動 |
-| `task docs` | ドキュメント開発サーバーを起動 |
-| `task check` | フォーマット + ビルド |
-| `task clear` | session.lock ファイルを削除 |
-| `task license` | ライセンスヘッダーを付与・更新 (`spotlessApply`) |
-| `task license:check` | ライセンスヘッダーを検証 (`spotlessCheck`) |
-| `task agent` | `.agent/rules/` から `CLAUDE.md` / `AGENTS.md` を生成 |
-
-## ビルド時定数 (BuildConstants)
-
-`common/build.gradle.kts` の `generateBuildConstants` タスクが、ビルドのたびに `BuildConstants.kt` を生成します。
-
-| 定数 | 値の由来 | 主な用途 |
-|------|---------|---------|
-| `BuildConstants.VERSION` | `gradle.properties` の `version` | Velocity の `@Plugin(version = ...)` |
-
-`const val` なので `@Plugin` のようなアノテーション引数にそのまま使えます。
-Velocity モジュールでは kapt で `@Plugin` を処理して `velocity-plugin.json` を生成しているため、Kotlin ソースだけで Velocity プラグインとして認識されます。
-
-## 実行時ライブラリ
-
-Paper 向けの JAR には Kotlin 標準ライブラリや Koin などの依存を同梱せず、`MoripaActivityReportLoader` がサーバー起動時に Maven Central のミラーから取得します (JAR は約 9MB → 約 1MB)。
-取得するライブラリの一覧 (`paper-libraries.txt`) はビルド時に `runtimeClasspath` から自動生成されます。
-`party.morino` のモジュールと `-SNAPSHOT` 版 (cloud など) のみ JAR に同梱します。条件は `paper/build.gradle.kts` の `isBundled` で変更できます。
-
-## GitHub Actions
-
-| ワークフロー | トリガー | 説明 |
-|-------------|---------|------|
-| `check_pull_request.yml` | Pull Request | ビルドチェック・実行時ライブラリがミラーに存在するかの確認 |
-| `preview.yml` | Pull Request | プレビュービルド・S3 アップロード・PR コメント |
-| `upload.yml` | Release published | GitHub Release にJAR をアップロード |
-| `release.yml` | Push to master | Release Drafter でドラフトリリース作成 |
-| `deploy_docs.yml` | Push to master (docs/) | GitHub Pages にドキュメントデプロイ |
-| `dependabot_auto_merge.yml` | Dependabot PR | 自動マージ |
-| `sync-label.yml` | labels.json 変更 | GitHub ラベル同期 |
+JAR は `paper/build/libs/` と `velocity/build/libs/` に出力されます。
 
 ## ライセンス
 
-CC0-1.0
-
-### ライセンスヘッダー
-
-Kotlin / Java ソースと `*.gradle.kts` には [Spotless](https://github.com/diffplug/spotless) でライセンスヘッダーを付与します。
-ヘッダー本文は `config/spotless/license-header.kt` に一元管理されており、`$YEAR` が年に置き換わります (既存ファイルは `開始年-現在年` に更新されます)。
-
-```bash
-# ヘッダーを付与・更新
-task license        # = ./gradlew spotlessApply
-
-# ヘッダーの検証のみ
-task license:check  # = ./gradlew spotlessCheck
-```
-
-`build` / `check` は失敗しない設定 (`isEnforceCheck = false`) なので、任意のタイミングで実行してください。
+LibertyBans の API を利用しているため、[GNU Affero General Public License v3.0 以降](LICENSE) で公開しています。

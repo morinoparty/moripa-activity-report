@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
-
 plugins {
     java
     alias(libs.plugins.kotlin.jvm)
@@ -32,19 +31,24 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":api"))
     compileOnly(libs.velocity.api)
+    // LibertyBans の API。実行時は LibertyBans プラグイン側のクラスを使うため同梱しない
+    compileOnly(libs.libertybans.api)
 
     implementation(libs.bundles.commands.velocity)
 
-    // compileOnly
-    compileOnly(libs.kotlinx.serialization.json)
+    // Kotlin の標準ライブラリと kotlinx-serialization は JAR に同梱する
+    // (他のプラグインから借りると、同名のクラスが別々のクラスローダーから読み込まれて LinkageError になるため)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(kotlin("stdlib-jdk8"))
     compileOnly(libs.bundles.coroutines.velocity)
-    compileOnly(kotlin("stdlib-jdk8"))
 
     // JARにバンドル
     implementation(libs.koin.core)
 
     // テスト依存関係
     testImplementation(libs.bundles.junit.jupiter)
+    // compileOnly はテストのクラスパスに乗らないため、PunishmentType などを使うテスト用に追加する
+    testImplementation(libs.libertybans.api)
     testImplementation(libs.bundles.koin.test)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.serialization.json)
@@ -59,12 +63,12 @@ tasks {
     }
     shadowJar {
         dependencies {
-            exclude(dependency("org.jetbrains.kotlin:.*:.*"))
+            // kotlin-reflect は Velocity 版のコードでは使わないため同梱しない
+            exclude(dependency("org.jetbrains.kotlin:kotlin-reflect:.*"))
             exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:.*"))
             exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:.*"))
             exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:.*"))
             exclude(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-bom:.*"))
-            exclude(dependency("org.jetbrains.kotlinx:kotlinx-serialization-.*:.*"))
         }
     }
     test {
@@ -81,13 +85,15 @@ sourceSets.main {
     resourceFactory {
         // @Plugin アノテーションの代わりに velocity-plugin.json を生成する
         velocityPluginJson {
-            id = "moripaactivityreport"
+            id = "moripa-activity-report"
             name = rootProject.name
             // gradle.properties の version と連動する
             version = project.version.toString()
-            description = "A Minecraft plugin template"
+            description = "Reports staff activities (punishments) to Discord"
             authors.add("morinoparty")
             main = "$group.moripaactivityreport.velocity.MoripaActivityReport"
+            // LibertyBans は任意依存。先に読み込ませ、導入されていれば処罰を報告する
+            dependency("libertybans", true)
         }
     }
 }

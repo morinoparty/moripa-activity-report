@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
@@ -28,6 +27,13 @@ dependencies {
     compileOnly(libs.paper.api)
     compileOnly(libs.velocity.api)
     implementation(libs.kotlinx.serialization.json)
+
+    // テスト依存関係
+    testImplementation(libs.bundles.junit.jupiter)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 // ビルド時の値 (プラグインのバージョン) を Kotlin の const val として生成する。

@@ -15,23 +15,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
+package party.morino.moripaactivityreport.paper.ticket
 
-package party.morino.moripaactivityreport.velocity.commands
+import org.bukkit.entity.Player
+import party.morino.moripaactivityreport.paper.model.ticket.TicketCloseDirective
 
-import com.velocitypowered.api.command.CommandSource
-import net.kyori.adventure.text.Component
-import org.incendo.cloud.velocity.VelocityCommandManager
-
-class ExampleCommand(
-    private val commandManager: VelocityCommandManager<CommandSource>,
-) {
-    fun register() {
-        val command = commandManager.commandBuilder("moripaactivityreport")
-            .handler { ctx ->
-                ctx.sender().sendMessage(Component.text("Hello from MoripaActivityReport!"))
-            }
-            .build()
-
-        commandManager.command(command)
+/**
+ * MoripaUtils が導入されていない場合の [TicketCloser]
+ *
+ * チケットはクローズできないため、指示が無視されたことだけをプレイヤーに伝える。
+ */
+class UnavailableTicketCloser : TicketCloser {
+    override fun close(player: Player, directive: TicketCloseDirective) {
+        player.sendRichMessage("<yellow>MoripaUtils が導入されていないため、チケットはクローズしませんでした。")
     }
 }
