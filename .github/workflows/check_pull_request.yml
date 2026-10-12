@@ -45,7 +45,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      # PluginNameLoader (paper-plugin.yml) のライブラリは、Paper がサーバー起動時に Maven Central のミラー (Google) から取得する。
+      # MoripaActivityReportLoader (paper-plugin.yml) のライブラリは、Paper がサーバー起動時に Maven Central のミラー (Google) から取得する。
       # ミラーへの反映は Maven Central より遅れるため、未反映のバージョンが入ると起動できなくなる
       - name: Check plugin libraries are available on Paper's Maven Central mirror
         run: |

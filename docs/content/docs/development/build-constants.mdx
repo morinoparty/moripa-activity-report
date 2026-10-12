@@ -18,7 +18,7 @@ description: Gradle が生成するビルド時定数と Velocity の velocity-p
 
 ```kotlin
 // 例: 起動時にバージョンをログへ出力する
-logger.info("PluginName v${BuildConstants.VERSION} has been enabled!")
+logger.info("MoripaActivityReport v${BuildConstants.VERSION} has been enabled!")
 ```
 
 ## パッケージ名を変更した場合
@@ -28,7 +28,7 @@ logger.info("PluginName v${BuildConstants.VERSION} has been enabled!")
 
 ```kotlin
 // common/build.gradle.kts
-val basePackage = "party.morino.pluginname"
+val basePackage = "party.morino.moripaactivityreport"
 ```
 
 ## Velocity の velocity-plugin.json 生成
@@ -46,12 +46,12 @@ plugins {
 sourceSets.main {
     resourceFactory {
         velocityPluginJson {
-            id = "pluginname"
+            id = "moripaactivityreport"
             name = rootProject.name
             version = project.version.toString()
             description = "A Minecraft plugin template"
             authors.add("morinoparty")
-            main = "$group.pluginname.velocity.PluginName"
+            main = "$group.moripaactivityreport.velocity.MoripaActivityReport"
         }
     }
 }

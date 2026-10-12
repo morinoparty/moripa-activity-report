@@ -16,7 +16,7 @@
 - 作業が途中で止まった場合や、ユーザーが明示的に「push しない」「PR を作らない」と言った場合はこの限りではない
 
 ## Repository
-- [PluginName](https://github.com/morinoparty/PluginName)
+- [MoripaActivityReport](https://github.com/morinoparty/moripa-activity-report)
 
 ## コミットメッセージ
 - コミットメッセージは英語で書き、以下のような形式で書く。

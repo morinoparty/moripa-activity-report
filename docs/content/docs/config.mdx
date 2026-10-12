@@ -1,0 +1,47 @@
+---
+title: 設定
+description: config.json による Discord Webhook の設定
+---
+
+# 設定
+
+設定はプラグインのデータフォルダにある `config.json` に記述します。
+ファイルが存在しない場合は、初回起動時にデフォルトの設定が書き出されます。
+Paper と Velocity で同じ形式を使用し、それぞれのサーバーで報告先を設定します。
+
+| 環境 | ファイルの場所 |
+|------|---------------|
+| Paper | `plugins/MoripaActivityReport/config.json` |
+| Velocity | `plugins/moripa-activity-report/config.json` |
+
+変更した設定は、`/mar reload` (Paper) または `/marv reload` (Velocity) で反映できます。
+
+## デフォルトの設定
+
+```json
+{
+    "webhook": {
+        "url": "",
+        "avatarUrl": "https://api.mcheads.org/head/{uuid}/64",
+        "serviceAccountName": "Moripa Service Account",
+        "serviceAccountIconUrl": "https://raw.githubusercontent.com/morinoparty/moripa-assets/refs/heads/main/logo/logo-72.png"
+    }
+}
+```
+
+## 項目
+
+| 項目 | デフォルト | 説明 |
+|------|-----------|------|
+| `webhook.url` | `""` | 報告を送る Discord Webhook の URL です。空の場合は報告を送信しません。 |
+| `webhook.avatarUrl` | MC Heads の頭部画像 | プレイヤーのアイコン画像の URL です。`{uuid}` と `{name}` はプレイヤーの UUID と名前に置き換えられます。空の場合はアイコンを表示しません。 |
+| `webhook.serviceAccountName` | `Moripa Service Account` | コンソールから実行された場合に、実行者として表示する名前です。 |
+| `webhook.serviceAccountIconUrl` | morinoparty のロゴ | コンソールから実行された場合に、実行者として表示するアイコン画像の URL です。MoripaUtils のチケット通知と同じ画像です。 |
+
+## 報告の表示
+
+報告は、次の形式で Discord に送信されます。
+
+- メッセージの送信者 (名前とアイコン) は、操作を実行した人です。コンソールから実行された場合は、サービスアカウントとして表示されます。
+- Embed の上部 (名前とアイコン) は、操作の対象になった人です。
+- Embed の項目は、機能ごとに異なります。詳細は各機能のページを参照してください。

@@ -12,6 +12,12 @@ ktlint = "14.2.0"
 mockk = "1.14.11"
 junit = "6.1.3"
 mockBukkit = "4.117.0"
+# 土地保護 (claim) の削除を報告する。実行時は GriefPrevention プラグイン側のクラスを使う
+griefprevention = "16.18.7"
+# チケットのクローズに使う MoripaUtils の公開 API (JitPack)。リリース前のため PR #34 のコミットを指定している
+moripaUtils = "61fa526514"
+# 処罰を報告する LibertyBans の API。実行時は LibertyBans プラグイン側のクラスを使う
+libertybans = "1.1.4"
 
 [libraries]
 paper-api = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
@@ -33,6 +39,10 @@ mccoroutine-velocity-api = { group = "com.github.shynixn.mccoroutine", name = "m
 mccoroutine-velocity-core = { group = "com.github.shynixn.mccoroutine", name = "mccoroutine-velocity-core", version.ref = "mccoroutine" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+
+griefprevention = { group = "com.github.GriefPrevention", name = "GriefPrevention", version.ref = "griefprevention" }
+moripa-utils-api = { group = "com.github.morinoparty", name = "moripa-utils", version.ref = "moripaUtils" }
+libertybans-api = { group = "space.arim.libertybans", name = "bans-api", version.ref = "libertybans" }
 
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mock-bukkit = { group = "org.mockbukkit.mockbukkit", name = "mockbukkit-v26.2", version.ref = "mockBukkit" }

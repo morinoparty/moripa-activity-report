@@ -30,15 +30,15 @@ description: fukurou を使って実際の Paper サーバーとクライアン�
 
 ## シナリオの例
 
-`game-test/scenarios/hello.json` では、プレイヤーが `/pluginname` を実行し、クライアントのチャットログに `Hello from PluginName!` が表示されるまで待ってから、スクリーンショットを撮影します。
+`game-test/scenarios/reload.json` では、OP のプレイヤーが `/mar reload` を実行し、クライアントのチャットログに再読み込みの完了メッセージが表示されるまで待ってから、スクリーンショットを撮影します。
 
 ```json
 {
-  "name": "/pluginname replies with a greeting",
+  "name": "/mar reload reloads config.json",
   "steps": [
-    { "on": "Alice", "action": "chat", "text": "/pluginname" },
-    { "on": "Alice", "action": "wait_for_log", "pattern": "\\[CHAT\\] Hello from PluginName!", "timeout": 10 },
-    { "on": "Alice", "action": "screenshot", "name": "hello" }
+    { "on": "Alice", "action": "chat", "text": "/mar reload" },
+    { "on": "Alice", "action": "wait_for_log", "pattern": "\\[CHAT\\] config\\.json を再読み込みしました。", "timeout": 10 },
+    { "on": "Alice", "action": "screenshot", "name": "reload" }
   ]
 }
 ```

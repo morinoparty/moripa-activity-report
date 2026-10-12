@@ -6,14 +6,14 @@ description: 依存ライブラリを JAR に同梱せず、Paper に実行時�
 # 実行時ライブラリ
 
 Paper 向けの JAR には、Kotlin 標準ライブラリや kotlinx-coroutines、Koin などの依存ライブラリを同梱していません。
-これらはサーバー起動時に `PluginNameLoader` が Paper の `MavenLibraryResolver` を通じて Maven Central のミラーから取得します。
+これらはサーバー起動時に `MoripaActivityReportLoader` が Paper の `MavenLibraryResolver` を通じて Maven Central のミラーから取得します。
 これにより JAR のサイズは約 9MB から約 1MB に削減されています。
 
 ## 仕組み
 
 1. ビルド時に `paper/build.gradle.kts` の `generatePaperLibraries` タスクが、`runtimeClasspath` を解決して `paper-libraries.txt` を生成します。
 2. `shadowJar` は、同梱対象以外の外部依存を JAR から除外します。
-3. サーバー起動時に `PluginNameLoader` が `paper-libraries.txt` を読み込み、記載されたライブラリを Paper に取得させます。
+3. サーバー起動時に `MoripaActivityReportLoader` が `paper-libraries.txt` を読み込み、記載されたライブラリを Paper に取得させます。
 
 `paper-libraries.txt` には 1 行に 1 つの Maven 座標 (`group:artifact:version`) が記載されます。
 依存の追加や更新に合わせて自動で再生成されるため、手で編集する必要はありません。
@@ -47,9 +47,9 @@ fun isBundled(
         version.endsWith("-SNAPSHOT")
 ```
 
-## PluginNameLoader を Java で記述している理由
+## MoripaActivityReportLoader を Java で記述している理由
 
-`PluginNameLoader` はプラグイン本体より先に実行され、Kotlin 標準ライブラリ自体もここで取得します。
+`MoripaActivityReportLoader` はプラグイン本体より先に実行され、Kotlin 標準ライブラリ自体もここで取得します。
 そのため Kotlin で記述すると、Kotlin 標準ライブラリがクラスパスに存在しない状態で `kotlin.jvm.internal.Intrinsics` などを参照してしまい、読み込みに失敗します。
 これを避けるために、`paper/src/main/java/` に Java で記述しています。
 

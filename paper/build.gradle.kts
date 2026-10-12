@@ -1,11 +1,22 @@
 /*
- * Written in 2026 by Nikomaru <nikomaru@nikomaru.dev>
+ * MoripaActivityReport
+ * Copyright © 2026 morinoparty
  *
- * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide.This software is distributed without any warranty.
+ * MoripaActivityReport is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * You should have received a copy of the CC0 Public Domain Dedication along with this software.
- * If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+ * MoripaActivityReport is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
+import xyz.jpenilla.resourcefactory.bukkit.Permission
+import xyz.jpenilla.resourcefactory.paper.PaperPluginYaml
 
 plugins {
     java
@@ -23,6 +34,10 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":api"))
     compileOnly(libs.paper.api)
+    // 連携先のプラグインの API。実行時は各プラグインのクラスを joinClasspath で参照するため同梱せず、
+    // MoripaActivityReportLoader にも取得させない (compileOnly は runtimeClasspath に含まれない)
+    compileOnly(libs.griefprevention) { isTransitive = false }
+    compileOnly(libs.moripa.utils.api) { isTransitive = false }
 
     implementation(libs.bundles.commands.paper)
     // cloud-kotlin-coroutines が推移的に持ち込む kotlin-reflect は古い版 (2.0.x) になるため、stdlib と同じ版にそろえる
@@ -42,7 +57,7 @@ dependencies {
     testImplementation(libs.mock.bukkit)
 }
 
-// JAR に同梱する依存。これ以外の runtimeClasspath の外部依存は PluginNameLoader が実行時に Paper に取得させる
+// JAR に同梱する依存。これ以外の runtimeClasspath の外部依存は MoripaActivityReportLoader が実行時に Paper に取得させる
 fun isBundled(
     group: String,
     version: String,
@@ -62,7 +77,7 @@ val runtimeLibraries =
             .distinct()
     }
 
-// PluginNameLoader が読み込むライブラリ一覧をリソースとして生成する
+// MoripaActivityReportLoader が読み込むライブラリ一覧をリソースとして生成する
 val generatePaperLibraries by tasks.registering {
     val libraries = runtimeLibraries
     val outputDirectory = layout.buildDirectory.dir("generated/paper-libraries")
@@ -106,11 +121,24 @@ sourceSets.main {
         paperPluginYaml {
             name = rootProject.name
             version = project.version.toString()
-            website = "https://github.com/morinoparty/PluginName"
-            main = "$group.pluginname.paper.PluginName"
-            bootstrapper = "$group.pluginname.paper.PluginNameBootstrap"
-            loader = "$group.pluginname.paper.PluginNameLoader"
+            website = "https://github.com/morinoparty/moripa-activity-report"
+            main = "$group.moripaactivityreport.paper.MoripaActivityReport"
+            bootstrapper = "$group.moripaactivityreport.paper.MoripaActivityReportBootstrap"
+            loader = "$group.moripaactivityreport.paper.MoripaActivityReportLoader"
             apiVersion = "26.2"
+            dependencies {
+                // GriefPrevention は任意依存。先にロードし、joinClasspath で ClaimDeletedEvent などを参照できるようにする
+                server("GriefPrevention", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
+                // MoripaUtils は任意依存。公開 API でチケットをクローズする
+                server("MoripaUtils", load = PaperPluginYaml.Load.BEFORE, required = false, joinClasspath = true)
+            }
+            permissions {
+                // /mar reload で config.json を再読み込みする権限
+                register("moripaactivityreport.reload") {
+                    description = "Allows reloading config.json with /mar reload"
+                    default = Permission.Default.OP
+                }
+            }
         }
     }
 }

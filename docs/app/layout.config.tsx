@@ -5,7 +5,7 @@ export function baseOptions(): BaseLayoutProps {
         nav: {
             title: (
                 <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold">PluginName</span>
+                    <span className="text-lg font-bold">MoripaActivityReport</span>
                 </div>
             ),
             transparentMode: "top",
@@ -13,7 +13,7 @@ export function baseOptions(): BaseLayoutProps {
         themeSwitch: {
             enabled: false,
         },
-        modrinthUrl: "https://modrinth.com/plugin/pluginname",
-        githubUrl: "https://github.com/morinoparty/PluginName",
+        modrinthUrl: "https://modrinth.com/plugin/moripaactivityreport",
+        githubUrl: "https://github.com/morinoparty/moripa-activity-report",
     };
 }

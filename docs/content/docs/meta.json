@@ -2,7 +2,10 @@
     "pages": [
         "---[Rocket]はじめに---",
         "index",
+        "config",
         "...introduction",
+        "---[Megaphone]機能---",
+        "...features",
         "---[Hammer]開発---",
         "...development"
     ]

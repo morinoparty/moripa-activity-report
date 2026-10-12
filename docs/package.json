@@ -1,5 +1,5 @@
 {
-    "name": "pluginname-docs",
+    "name": "moripa-activity-report-docs",
     "private": true,
     "version": "0.0.1",
     "scripts": {
@@ -50,7 +50,7 @@
         "@types/react-dom": "^19.2.3",
         "typescript": "^5.9.3"
     },
-    "license": "CC0-1.0",
+    "license": "AGPL-3.0-or-later",
     "engines": {
         "yarn": "please use pnpm",
         "npm": "please use pnpm"
