@@ -1,8 +1,0 @@
-{
-  "name": "/moripaactivityreport replies with a greeting",
-  "steps": [
-    { "on": "Alice", "action": "chat", "text": "/moripaactivityreport" },
-    { "on": "Alice", "action": "wait_for_log", "pattern": "\\[CHAT\\] Hello from MoripaActivityReport!", "timeout": 10 },
-    { "on": "Alice", "action": "screenshot", "name": "hello" }
-  ]
-}
