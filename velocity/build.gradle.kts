@@ -33,6 +33,8 @@ dependencies {
     compileOnly(libs.velocity.api)
     // LibertyBans の API。実行時は LibertyBans プラグイン側のクラスを使うため同梱しない
     compileOnly(libs.libertybans.api)
+    // MoripaUtils の公開 API。実行時は MoripaUtils プラグイン側のクラスを使うため同梱しない
+    compileOnly(libs.moripa.utils.api) { isTransitive = false }
 
     implementation(libs.bundles.commands.velocity)
 
@@ -94,6 +96,8 @@ sourceSets.main {
             main = "$group.moripaactivityreport.velocity.MoripaActivityReport"
             // LibertyBans は任意依存。先に読み込ませ、導入されていれば処罰を報告する
             dependency("libertybans", true)
+            // MoripaUtils は任意依存。先に読み込ませ、導入されていれば処罰の理由に書かれたチケットをクローズする
+            dependency("moripa-utils", true)
         }
     }
 }

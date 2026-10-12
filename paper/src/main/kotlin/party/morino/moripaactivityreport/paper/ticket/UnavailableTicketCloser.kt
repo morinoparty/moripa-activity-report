@@ -18,7 +18,7 @@
 package party.morino.moripaactivityreport.paper.ticket
 
 import org.bukkit.entity.Player
-import party.morino.moripaactivityreport.paper.model.ticket.TicketCloseDirective
+import party.morino.moripaactivityreport.common.model.ticket.TicketCloseDirective
 
 /**
  * MoripaUtils が導入されていない場合の [TicketCloser]

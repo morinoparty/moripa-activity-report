@@ -30,7 +30,7 @@ import org.koin.core.component.inject
 import party.morino.moripaactivityreport.common.model.report.ReportActor
 import party.morino.moripaactivityreport.common.webhook.ActivityReporter
 import party.morino.moripaactivityreport.paper.model.claim.DeletedClaim
-import party.morino.moripaactivityreport.paper.ticket.TicketCloseDirectiveParser
+import party.morino.moripaactivityreport.common.ticket.TicketCloseDirectiveParser
 import party.morino.moripaactivityreport.paper.ticket.TicketCloser
 import java.time.Instant
 

@@ -21,26 +21,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import party.morino.moripaactivityreport.paper.claim.LastSeenFormatter
-import party.morino.moripaactivityreport.paper.model.ticket.TicketCloseDirective
-import party.morino.moripaactivityreport.paper.ticket.TicketCloseDirectiveParser
 import java.time.Duration
 import java.time.Instant
 
 /**
- * /deleteclaim の理由の解析と最終ログインの表示を検証する
+ * 土地保護の削除の報告に使う最終ログインの表示を検証する
  */
 class ClaimDeletionTest {
-    @Test
-    @DisplayName("Extracts close directives and keeps the rest as the comment")
-    fun parsesCloseDirectives() {
-        assertEquals(TicketCloseDirective(listOf(2L), "長期間放置"), TicketCloseDirectiveParser.parse("長期間放置 close #2"))
-        // 複数の指示や大文字小文字の違いも受け付け、重複は 1 回にする
-        assertEquals(TicketCloseDirective(listOf(3L, 5L), "荒らし"), TicketCloseDirectiveParser.parse("Close#3 荒らし close #5 close #3"))
-        // 指示しか無い場合はコメントを残さない
-        assertEquals(TicketCloseDirective(listOf(7L), null), TicketCloseDirectiveParser.parse("close #7"))
-        assertEquals(TicketCloseDirective(emptyList(), "長期間放置"), TicketCloseDirectiveParser.parse("長期間放置"))
-    }
-
     @Test
     @DisplayName("Formats the last login relative to now")
     fun formatsLastSeen() {

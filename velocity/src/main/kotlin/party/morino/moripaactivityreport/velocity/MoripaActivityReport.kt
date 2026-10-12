@@ -37,6 +37,9 @@ import party.morino.moripaactivityreport.common.config.ActivityReportConfigLoade
 import party.morino.moripaactivityreport.common.webhook.ActivityReporter
 import party.morino.moripaactivityreport.velocity.commands.ReloadCommand
 import party.morino.moripaactivityreport.velocity.punishment.LibertyBansReporter
+import party.morino.moripaactivityreport.velocity.ticket.MoripaUtilsTicketCloser
+import party.morino.moripaactivityreport.velocity.ticket.TicketCloser
+import party.morino.moripaactivityreport.velocity.ticket.UnavailableTicketCloser
 import java.io.IOException
 import java.nio.file.Path
 
@@ -44,6 +47,7 @@ import java.nio.file.Path
  * MoripaActivityReport の Velocity 向けプラグイン本体
  *
  * LibertyBans が導入されている場合に、処罰と処罰の解除を Discord に報告する。
+ * 処罰の理由に「close #番号」が書かれていれば、MoripaUtils のチケットをクローズする。
  * プラグインのメタデータ (id / version など) は velocity/build.gradle.kts の velocityPluginJson で生成する。
  */
 class MoripaActivityReport @Inject constructor(
@@ -75,7 +79,8 @@ class MoripaActivityReport @Inject constructor(
 
         // LibertyBans は任意依存。API のクラスに触れる前に、導入されているかを Velocity の API だけで確認する
         if (server.pluginManager.getPlugin(LIBERTY_BANS_PLUGIN_ID).isPresent) {
-            libertyBansReporter = LibertyBansReporter(reporter, java.util.logging.Logger.getLogger(JUL_LOGGER_NAME)).also { it.start() }
+            val julLogger = java.util.logging.Logger.getLogger(JUL_LOGGER_NAME)
+            libertyBansReporter = LibertyBansReporter(server, reporter, createTicketCloser(julLogger), julLogger).also { it.start() }
             logger.info("LibertyBans is installed; punishments are reported to Discord")
         } else {
             logger.info("LibertyBans is not installed; punishment reports are disabled")
@@ -113,6 +118,20 @@ class MoripaActivityReport @Inject constructor(
     }
 
     /**
+     * MoripaUtils の有無に応じて、チケットをクローズする方法を選ぶ
+     *
+     * @param julLogger クローズの失敗を記録するロガー
+     * @return MoripaUtils が導入されていればその公開 API を使う実装、無ければ何もしない実装
+     */
+    private fun createTicketCloser(julLogger: java.util.logging.Logger): TicketCloser =
+        // MoripaUtils のクラスに触れる前に、導入されているかを Velocity の API だけで確認する
+        if (server.pluginManager.getPlugin(MORIPA_UTILS_PLUGIN_ID).isPresent) {
+            MoripaUtilsTicketCloser(julLogger)
+        } else {
+            UnavailableTicketCloser()
+        }
+
+    /**
      * Koin DI コンテナの初期化
      */
     private fun setupKoin() {
@@ -135,6 +154,9 @@ class MoripaActivityReport @Inject constructor(
     companion object {
         /** LibertyBans のプラグイン ID */
         private const val LIBERTY_BANS_PLUGIN_ID = "libertybans"
+
+        /** MoripaUtils のプラグイン ID */
+        private const val MORIPA_UTILS_PLUGIN_ID = "moripa-utils"
 
         /** 報告の失敗を記録する java.util.logging のロガーの名前 */
         private const val JUL_LOGGER_NAME = "MoripaActivityReport"
