@@ -1,13 +1,22 @@
 /*
- * Written in 2026 by Nikomaru <nikomaru@nikomaru.dev>
+ * MoripaActivityReport
+ * Copyright © 2026 morinoparty
  *
- * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide.This software is distributed without any warranty.
+ * MoripaActivityReport is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * You should have received a copy of the CC0 Public Domain Dedication along with this software.
- * If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+ * MoripaActivityReport is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package party.morino.pluginname.paper
+package party.morino.moripaactivityreport.paper
 
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -22,13 +31,13 @@ import org.mockbukkit.mockbukkit.ServerMock
  * テスト用の JUnit 5 拡張クラス
  * MockBukkit と Koin の初期化・クリーンアップを行う
  */
-class PluginNameTest :
+class MoripaActivityReportTest :
     BeforeAllCallback,
     AfterAllCallback {
 
     companion object {
         lateinit var server: ServerMock
-        lateinit var plugin: PluginName
+        lateinit var plugin: MoripaActivityReport
     }
 
     override fun beforeAll(context: ExtensionContext) {
@@ -46,7 +55,7 @@ class PluginNameTest :
         }
 
         // プラグインをロード
-        plugin = MockBukkit.load(PluginName::class.java)
+        plugin = MockBukkit.load(MoripaActivityReport::class.java)
 
         // プラグインインスタンスを Koin に登録
         GlobalContext.get().declare(plugin)

@@ -5,8 +5,8 @@ import { Provider } from "@/components/provider";
 
 export const metadata: Metadata = {
 	title: {
-		template: "%s | PluginName",
-		default: "PluginName Documentation",
+		template: "%s | MoripaActivityReport",
+		default: "MoripaActivityReport Documentation",
 	},
 	description: "A Minecraft plugin",
 };

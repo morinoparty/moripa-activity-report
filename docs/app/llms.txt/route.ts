@@ -12,9 +12,9 @@ export async function GET() {
 		return `- [${title}](${url}): ${description}`;
 	});
 
-	const content = `# PluginName Documentation
+	const content = `# MoripaActivityReport Documentation
 
-> PluginName is a Minecraft plugin.
+> MoripaActivityReport is a Minecraft plugin.
 
 ## Documentation Pages
 

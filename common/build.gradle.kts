@@ -1,10 +1,19 @@
 /*
- * Written in 2026 by Nikomaru <nikomaru@nikomaru.dev>
+ * MoripaActivityReport
+ * Copyright © 2026 morinoparty
  *
- * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide.This software is distributed without any warranty.
+ * MoripaActivityReport is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * You should have received a copy of the CC0 Public Domain Dedication along with this software.
- * If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+ * MoripaActivityReport is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
 
 plugins {
@@ -25,7 +34,7 @@ dependencies {
 // Velocity の @Plugin アノテーションの引数はコンパイル時定数である必要があるため、
 // Gradle 側の値を BuildConstants.kt に書き出して参照させる。
 // パッケージ名を変更した場合はこの basePackage も合わせて変更すること。
-val basePackage = "party.morino.pluginname"
+val basePackage = "party.morino.moripaactivityreport"
 val buildConstantsDir = layout.buildDirectory.dir("generated/sources/buildConstants/kotlin/main")
 
 val generateBuildConstants by tasks.registering {

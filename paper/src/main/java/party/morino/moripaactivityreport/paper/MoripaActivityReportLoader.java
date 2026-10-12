@@ -1,13 +1,22 @@
 /*
- * Written in 2026 by Nikomaru <nikomaru@nikomaru.dev>
+ * MoripaActivityReport
+ * Copyright © 2026 morinoparty
  *
- * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide.This software is distributed without any warranty.
+ * MoripaActivityReport is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * You should have received a copy of the CC0 Public Domain Dedication along with this software.
- * If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+ * MoripaActivityReport is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package party.morino.pluginname.paper;
+package party.morino.moripaactivityreport.paper;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
@@ -24,13 +33,13 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * PluginName のローダークラス。
+ * MoripaActivityReport のローダークラス。
  * ビルド時に生成したライブラリ一覧 (JAR に同梱していない依存) を Paper に取得させる。
  *
  * Kotlin 標準ライブラリ自体もここで取得するため、このクラスは Kotlin ではなく Java で記述する。
  */
 @SuppressWarnings("unused")
-public class PluginNameLoader implements PluginLoader {
+public class MoripaActivityReportLoader implements PluginLoader {
     // paper/build.gradle.kts の generatePaperLibraries タスクが生成するリソース
     private static final String LIBRARIES_RESOURCE = "paper-libraries.txt";
 

@@ -40,24 +40,24 @@ GitHub の "Use this template" ボタンからリポジトリを作成するか�
 テンプレートのプレースホルダーを自分のプラグイン名に一括置換します。
 
 ```bash
-# 例: "PluginName" を "MyPlugin" に変更する場合
+# 例: "MoripaActivityReport" を "MyPlugin" に変更する場合
 
 # 1. settings.gradle.kts のルートプロジェクト名
 #    rootProject.name = "MyPlugin"
 
 # 2. パッケージ名の変更
-#    party.morino.pluginname → party.morino.myplugin
+#    party.morino.moripaactivityreport → party.morino.myplugin
 #    ディレクトリ名も合わせてリネーム
 #    common/build.gradle.kts の basePackage も合わせて変更 (BuildConstants の生成先)
 
 # 3. クラス名の変更
-#    PluginName → MyPlugin
-#    PluginNameAPI → MyPluginAPI
-#    PluginNameCommon → MyPluginCommon
+#    MoripaActivityReport → MyPlugin
+#    MoripaActivityReportAPI → MyPluginAPI
+#    MoripaActivityReportCommon → MyPluginCommon
 
 # 4. 設定ファイルの更新
 #    - paper/build.gradle.kts: main クラスのパス、website URL
-#    - velocity PluginName.kt: @Plugin アノテーションの id, name
+#    - velocity MoripaActivityReport.kt: @Plugin アノテーションの id, name
 #    - .agent/rules/: プロジェクト名、リポジトリ URL (CLAUDE.md / AGENTS.md は task agent で生成)
 #    - docs/app/layout.tsx: メタデータ
 #    - docs/app/layout.config.tsx: タイトル、GitHub URL
@@ -114,12 +114,12 @@ task docs
 
 - [ ] リポジトリ名を変更
 - [ ] `settings.gradle.kts` の `rootProject.name` を変更
-- [ ] パッケージ名 `party.morino.pluginname` を変更
+- [ ] パッケージ名 `party.morino.moripaactivityreport` を変更
 - [ ] `common/build.gradle.kts` の `basePackage` をパッケージ名に合わせて変更
 - [ ] ソースディレクトリ名をパッケージ名に合わせてリネーム
-- [ ] クラス名 (`PluginName`, `PluginNameAPI`, `PluginNameCommon`) を変更
+- [ ] クラス名 (`MoripaActivityReport`, `MoripaActivityReportAPI`, `MoripaActivityReportCommon`) を変更
 - [ ] `paper/build.gradle.kts` のメインクラスパス・website を変更
-- [ ] `velocity/.../PluginName.kt` の `@Plugin` アノテーションを変更
+- [ ] `velocity/.../MoripaActivityReport.kt` の `@Plugin` アノテーションを変更
 - [ ] `.agent/rules/` のプロジェクト説明とリポジトリ URL を変更し、`task agent` で `CLAUDE.md` / `AGENTS.md` を生成
 - [ ] `docs/app/layout.tsx` のメタデータを変更
 - [ ] `docs/app/layout.config.tsx` のタイトルと GitHub URL を変更
@@ -158,7 +158,7 @@ Velocity モジュールでは kapt で `@Plugin` を処理して `velocity-plug
 
 ## 実行時ライブラリ
 
-Paper 向けの JAR には Kotlin 標準ライブラリや Koin などの依存を同梱せず、`PluginNameLoader` がサーバー起動時に Maven Central のミラーから取得します (JAR は約 9MB → 約 1MB)。
+Paper 向けの JAR には Kotlin 標準ライブラリや Koin などの依存を同梱せず、`MoripaActivityReportLoader` がサーバー起動時に Maven Central のミラーから取得します (JAR は約 9MB → 約 1MB)。
 取得するライブラリの一覧 (`paper-libraries.txt`) はビルド時に `runtimeClasspath` から自動生成されます。
 `party.morino` のモジュールと `-SNAPSHOT` 版 (cloud など) のみ JAR に同梱します。条件は `paper/build.gradle.kts` の `isBundled` で変更できます。
 

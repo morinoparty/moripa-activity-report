@@ -1,13 +1,22 @@
 /*
- * Written in 2026 by Nikomaru <nikomaru@nikomaru.dev>
+ * MoripaActivityReport
+ * Copyright © 2026 morinoparty
  *
- * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide.This software is distributed without any warranty.
+ * MoripaActivityReport is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * You should have received a copy of the CC0 Public Domain Dedication along with this software.
- * If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+ * MoripaActivityReport is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package party.morino.pluginname.velocity
+package party.morino.moripaactivityreport.velocity
 
 import com.google.inject.Inject
 import com.velocitypowered.api.command.CommandSource
@@ -22,11 +31,11 @@ import org.koin.core.context.GlobalContext
 import org.koin.core.context.GlobalContext.getOrNull
 import org.koin.dsl.module
 import org.slf4j.Logger
-import party.morino.pluginname.common.PluginNameCommon
-import party.morino.pluginname.velocity.commands.ExampleCommand
+import party.morino.moripaactivityreport.common.MoripaActivityReportCommon
+import party.morino.moripaactivityreport.velocity.commands.ExampleCommand
 
 // プラグインのメタデータ (id / version など) は velocity/build.gradle.kts の velocityPluginJson で生成する
-class PluginName @Inject constructor(
+class MoripaActivityReport @Inject constructor(
     private val server: ProxyServer,
     private val logger: Logger,
 ) {
@@ -35,7 +44,7 @@ class PluginName @Inject constructor(
     @Suppress("UnusedParameter")
     fun onProxyInitialization(event: ProxyInitializeEvent) {
         setupKoin()
-        PluginNameCommon.init()
+        MoripaActivityReportCommon.init()
 
         val commandManager = VelocityCommandManager<CommandSource>(
             server.pluginManager.ensurePluginContainer(this),
@@ -46,13 +55,13 @@ class PluginName @Inject constructor(
 
         ExampleCommand(commandManager).register()
 
-        logger.info("PluginName has been enabled!")
+        logger.info("MoripaActivityReport has been enabled!")
     }
 
     @Subscribe
     @Suppress("UnusedParameter")
     fun onProxyShutdown(event: ProxyShutdownEvent) {
-        logger.info("PluginName has been disabled!")
+        logger.info("MoripaActivityReport has been disabled!")
     }
 
     /**
@@ -65,7 +74,7 @@ class PluginName @Inject constructor(
 
         val appModule = module {
             single<ProxyServer> { server }
-            single<org.slf4j.Logger> { this@PluginName.logger }
+            single<org.slf4j.Logger> { this@MoripaActivityReport.logger }
         }
 
         getOrNull() ?: GlobalContext.startKoin {
