@@ -15,15 +15,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with MoripaActivityReport. If not, see <https://www.gnu.org/licenses/>.
  */
-package party.morino.moripaactivityreport.paper.model.ticket
+package party.morino.moripaactivityreport.velocity.ticket
+
+import party.morino.moripaactivityreport.common.model.ticket.TicketCloseDirective
+import party.morino.moripaactivityreport.velocity.model.ticket.TicketCloseOperator
 
 /**
- * 削除の理由に含まれていた、チケットをクローズする指示
+ * MoripaUtils が導入されていない場合の [TicketCloser]
  *
- * @property ticketIds クローズするチケットの番号 (書かれた順、重複なし)
- * @property comment 指示を取り除いた残りの理由 (チケットのコメントとして残す。何も残らない場合は null)
+ * チケットはクローズできないため、指示が無視されたことだけを伝える。
  */
-data class TicketCloseDirective(
-    val ticketIds: List<Long>,
-    val comment: String?,
-)
+class UnavailableTicketCloser : TicketCloser {
+    override fun close(operator: TicketCloseOperator, directive: TicketCloseDirective, feedback: (String) -> Unit) {
+        feedback("<yellow>MoripaUtils が導入されていないため、チケットはクローズしませんでした。")
+    }
+}

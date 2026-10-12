@@ -18,12 +18,16 @@
 package party.morino.moripaactivityreport.velocity
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import party.morino.moripaactivityreport.common.model.report.ReportActor
 import party.morino.moripaactivityreport.common.model.report.ReportField
+import party.morino.moripaactivityreport.common.model.ticket.TicketCloseDirective
+import party.morino.moripaactivityreport.velocity.punishment.PendingTicketCloses
 import party.morino.moripaactivityreport.velocity.punishment.PunishmentReportFactory
 import space.arim.libertybans.api.PunishmentType
+import java.time.Duration
 import java.time.Instant
 
 /**
@@ -60,5 +64,28 @@ class PunishmentReportFactoryTest {
     fun createsPardonReport() {
         val pardon = PunishmentReportFactory.createPardon(null, target, PunishmentType.BAN)
         assertEquals(listOf(ReportField("恩赦", "BAN")), pardon.fields)
+    }
+
+    @Test
+    @DisplayName("Hides IP addresses")
+    fun hidesAddress() {
+        assertEquals("IP BANにつき非表示", PunishmentReportFactory.hiddenAddressName(PunishmentType.BAN))
+    }
+
+    @Test
+    @DisplayName("Keeps ticket close directives until the punishment is enacted")
+    fun keepsPendingTicketCloses() {
+        val pending = PendingTicketCloses(Duration.ofMinutes(5))
+        val directive = TicketCloseDirective(listOf(11L), "荒らし")
+        val key = PendingTicketCloses.keyOf(PunishmentType.BAN, "victim", "operator", "荒らし")
+
+        pending.put(key, directive, start)
+        // 一度取り出した指示は消える
+        assertEquals(directive, pending.take(key, start.plusSeconds(1)))
+        assertNull(pending.take(key, start.plusSeconds(1)))
+
+        // 確定しなかった処罰の指示は期限が切れると捨てる
+        pending.put(key, directive, start)
+        assertNull(pending.take(key, start.plus(Duration.ofMinutes(6))))
     }
 }

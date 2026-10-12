@@ -36,12 +36,18 @@ class ActivityReporter(
     @Volatile
     private var sender: DiscordWebhookSender? = null
 
+    /** 現在の Webhook の設定 (サービスアカウントの名前などを他の機能からも使う) */
+    @Volatile
+    var config: WebhookConfig = WebhookConfig()
+        private set
+
     /**
      * 送信先の設定を反映する
      *
      * @param config 新しい Webhook の設定
      */
     fun apply(config: WebhookConfig) {
+        this.config = config
         sender = DiscordWebhookSender(config, logger)
         if (config.url.isBlank()) {
             logger.warning("webhook.url is empty; activity reports will not be sent")

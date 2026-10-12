@@ -19,7 +19,7 @@ package party.morino.moripaactivityreport.paper.ticket
 
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import org.bukkit.entity.Player
-import party.morino.moripaactivityreport.paper.model.ticket.TicketCloseDirective
+import party.morino.moripaactivityreport.common.model.ticket.TicketCloseDirective
 import party.morino.moripautils.api.MoripaUtilsAPI
 import party.morino.moripautils.api.model.ticket.TicketActor
 import party.morino.moripautils.api.model.ticket.TicketCloseReason

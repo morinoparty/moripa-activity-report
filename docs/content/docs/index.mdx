@@ -13,7 +13,7 @@ Paper と Velocity の両方で動作します。
 | 機能 | 動作環境 | 連携先 | 説明 |
 |------|----------|--------|------|
 | [土地保護の削除](./features/claim) | Paper | GriefPrevention / MoripaUtils | `/deleteclaim [理由]` で土地保護を削除したときに、理由と一緒に報告します。理由に `close #番号` を含めると、MoripaUtils のチケットをクローズします。 |
-| [処罰](./features/punishment) | Velocity | LibertyBans | BAN・ミュート・警告・キックと、その解除を理由と一緒に報告します。 |
+| [処罰](./features/punishment) | Velocity | LibertyBans / MoripaUtils | BAN・ミュート・警告・キックと、その解除を理由と一緒に報告します。理由に `close #番号` を含めると、MoripaUtils のチケットをクローズします。 |
 
 報告先の Webhook は [設定](./config) で指定します。
 

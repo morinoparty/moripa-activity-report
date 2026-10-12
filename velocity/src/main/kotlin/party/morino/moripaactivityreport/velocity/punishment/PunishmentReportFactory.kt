@@ -77,6 +77,16 @@ object PunishmentReportFactory {
     )
 
     /**
+     * IP アドレスに対する処罰の対象者として表示する名前を返す (外部状態に依存しない純粋関数)
+     *
+     * IP アドレスは個人情報のため、Discord には表示しない。
+     *
+     * @param type 処罰の種類
+     * @return 表示する名前 (例: IP BANにつき非表示)
+     */
+    fun hiddenAddressName(type: PunishmentType): String = "IP ${type.name}につき非表示"
+
+    /**
      * 処罰の期間を表示用の文字列にする (外部状態に依存しない純粋関数)
      *
      * 0 の単位は省いて「7日」「1日 12時間」「30分」のように表す。
