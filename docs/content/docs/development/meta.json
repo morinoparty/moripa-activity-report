@@ -1,0 +1,10 @@
+{
+    "title": "開発",
+    "pages": [
+        "runtime-libraries",
+        "build-constants",
+        "license-header",
+        "game-test",
+        "build-performance"
+    ]
+}

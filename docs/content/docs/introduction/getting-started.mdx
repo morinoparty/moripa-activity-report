@@ -1,0 +1,50 @@
+---
+title: Getting Started
+description: テンプレートからプラグインを作成し、ビルドして動かすまでの手順
+---
+
+# はじめに
+
+このページでは、テンプレートから新しいプラグインを作成し、ビルドして開発サーバーで動かすまでの手順を説明します。
+
+## 必要環境
+
+| ツール | バージョン | 用途 |
+|--------|-----------|------|
+| Java | 25 (Temurin 推奨) | Gradle ビルド |
+| Node.js / pnpm | 26+ / 10+ | ドキュメントのビルド |
+| [Task](https://taskfile.dev/) | 任意 | タスクランナー |
+
+## プロジェクト名の変更
+
+GitHub の "Use this template" ボタンからリポジトリを作成したあと、プレースホルダーを自分のプラグイン名に置き換えます。
+主な変更箇所は次のとおりです。詳細なチェックリストはリポジトリの `README.md` を参照してください。
+
+- `settings.gradle.kts` の `rootProject.name`
+- パッケージ名 `party.morino.pluginname` とソースディレクトリ名
+- `common/build.gradle.kts` の `basePackage` (BuildConstants の生成先)
+- クラス名 `PluginName` / `PluginNameLoader` / `PluginNameBootstrap` など
+- `paper/build.gradle.kts` の `paperPluginYaml` (main / bootstrapper / loader のクラスパス、website)
+
+## ビルド
+
+```bash
+./gradlew build -x test
+
+# または Task を使用
+task build
+```
+
+Paper 向けの JAR は `paper/build/libs/*-all.jar`、Velocity 向けの JAR は `velocity/build/libs/*-all.jar` に出力されます。
+
+## 開発サーバーの起動
+
+```bash
+./gradlew :paper:runServer
+
+# または Task を使用
+task run
+```
+
+初回起動時は、JAR に同梱していない依存ライブラリを Paper がダウンロードします。
+仕組みについては [実行時ライブラリ](/docs/development/runtime-libraries) を参照してください。

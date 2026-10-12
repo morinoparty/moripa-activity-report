@@ -1,0 +1,51 @@
+---
+title: Build Performance
+description: ビルドキャッシュと configuration cache によるビルドの高速化
+---
+
+# ビルドの高速化
+
+このテンプレートでは、Gradle のビルドキャッシュと configuration cache を有効にして、ローカルと CI のビルドを高速化しています。
+
+## ビルドキャッシュ
+
+`gradle.properties` の `org.gradle.caching=true` により、タスクの出力 (コンパイル結果など) をキャッシュし、入力が同じであれば再実行せずに再利用します。
+キャッシュの保存先は Gradle のデフォルト (`~/.gradle/caches/build-cache-1`) です。
+
+CI では `gradle/actions/setup-gradle` が `GRADLE_USER_HOME` をジョブ間で保存するため、ビルドキャッシュも引き継がれます。
+main ブランチへのプッシュで `Check pull request` ワークフローがビルドしてキャッシュを保存し、プルリクエストではそのキャッシュを読み取り専用で利用します。
+
+| 状態 | `Check pull request` のビルド時間 (目安) |
+|------|---------------------------------------|
+| キャッシュなし | 約 40〜50 秒 |
+| キャッシュあり | 約 8 秒 |
+
+## Configuration cache
+
+`gradle.properties` の `org.gradle.configuration-cache=true` により、設定フェーズ (ビルドスクリプトの評価やタスクグラフの計算) の結果を保存し、2 回目以降のビルドで再利用します。
+ローカルで Gradle デーモンが起動していない状態からのビルドでは、約 20 秒から約 12 秒に短縮されました。
+
+configuration cache を有効にすると、タスクの実行時にビルドスクリプトのオブジェクト (`project` やスクリプトのプロパティなど) を参照できません。
+独自のタスクを追加する場合は、必要な値を設定時にローカル変数へ取り出してから `doLast` で使ってください。
+
+```kotlin
+// common/build.gradle.kts
+val generateBuildConstants by tasks.registering {
+    // スクリプトのプロパティは直列化できないため、ローカル変数に移しておく
+    val packageName = basePackage
+    doLast {
+        // ここでは packageName を使う (basePackage は参照しない)
+    }
+}
+```
+
+### CI で configuration cache を使う
+
+configuration cache には秘密情報が含まれる可能性があるため、`setup-gradle` は暗号化キーが設定されている場合にだけ保存・復元します。
+リポジトリのシークレットに `GRADLE_ENCRYPTION_KEY` を登録してください。値は次のコマンドで生成できます。
+
+```bash
+openssl rand -base64 16
+```
+
+シークレットが未設定の場合も CI は失敗せず、configuration cache が保存されないだけです。

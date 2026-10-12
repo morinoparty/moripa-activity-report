@@ -1,0 +1,8 @@
+{
+  "name": "/pluginname replies with a greeting",
+  "steps": [
+    { "on": "Alice", "action": "chat", "text": "/pluginname" },
+    { "on": "Alice", "action": "wait_for_log", "pattern": "\\[CHAT\\] Hello from PluginName!", "timeout": 10 },
+    { "on": "Alice", "action": "screenshot", "name": "hello" }
+  ]
+}

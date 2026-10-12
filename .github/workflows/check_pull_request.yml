@@ -1,0 +1,74 @@
+name: Check pull request
+
+on:
+  pull_request:
+  # main でもビルドして Gradle のキャッシュ (依存・ビルドキャッシュ) を保存し、PR から読めるようにする
+  push:
+    branches: [ main ]
+
+
+permissions:
+  statuses: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set commit status as pending
+        if: github.event_name == 'pull_request'
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          context: Check pull request
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      # Gradle キャッシュの設定（setup-gradle を使用、より効率的）
+      - uses: gradle/actions/setup-gradle@8379f6a1328ee0e06e2bb424dadb7b159856a326 # v4.4.0
+        with:
+          # configuration cache を保存・復元するための暗号化キー (未設定なら configuration cache は保存されない)
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # PR では読み取り専用にし、main へのプッシュでのみキャッシュを保存する
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test
+
+      # PluginNameLoader (paper-plugin.yml) のライブラリは、Paper がサーバー起動時に Maven Central のミラー (Google) から取得する。
+      # ミラーへの反映は Maven Central より遅れるため、未反映のバージョンが入ると起動できなくなる
+      - name: Check plugin libraries are available on Paper's Maven Central mirror
+        run: |
+          MIRROR=https://maven-central.storage-download.googleapis.com/maven2
+          missing=0
+          # 最終行に改行がなくても読み飛ばさないようにする
+          while read -r coordinate || [ -n "$coordinate" ]; do
+            [ -n "$coordinate" ] || continue
+            IFS=: read -r group artifact version <<< "$coordinate"
+            url="$MIRROR/${group//.//}/$artifact/$version/$artifact-$version.pom"
+            if curl -sfI "$url" > /dev/null; then
+              echo "OK      $coordinate"
+            else
+              echo "::error::$coordinate is not available on $MIRROR yet"
+              missing=1
+            fi
+          done < paper/build/resources/main/paper-libraries.txt
+          exit $missing
+
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@master
+        if: always() && github.event_name == 'pull_request'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          context: Check pull request

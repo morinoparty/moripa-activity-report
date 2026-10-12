@@ -1,0 +1,62 @@
+---
+title: Build Constants
+description: Gradle が生成するビルド時定数と Velocity の velocity-plugin.json 生成
+---
+
+# ビルド時定数 (BuildConstants)
+
+このテンプレートでは、ビルドのたびに Gradle が `BuildConstants.kt` を生成し、Gradle 側の値を Kotlin の `const val` として参照できるようにしています。
+生成処理は `common/build.gradle.kts` の `generateBuildConstants` タスクで行い、出力先は `common/build/generated/sources/buildConstants/kotlin/main/` です。
+
+## 定数の一覧
+
+| 定数 | 値の由来 | 主な用途 |
+|------|---------|---------|
+| `BuildConstants.VERSION` | `gradle.properties` の `version` | ログ出力やバージョン表示など |
+
+`const val` として生成されるため、アノテーション引数のようにコンパイル時定数が必要な場所でもそのまま利用できます。
+
+```kotlin
+// 例: 起動時にバージョンをログへ出力する
+logger.info("PluginName v${BuildConstants.VERSION} has been enabled!")
+```
+
+## パッケージ名を変更した場合
+
+生成されるファイルのパッケージは `common/build.gradle.kts` の `basePackage` で決まります。
+テンプレートからプラグインを作成してパッケージ名を変更した際は、この値も合わせて書き換えてください。
+
+```kotlin
+// common/build.gradle.kts
+val basePackage = "party.morino.pluginname"
+```
+
+## Velocity の velocity-plugin.json 生成
+
+Velocity はプラグインの認識に `velocity-plugin.json` を必要とします。
+通常は `@Plugin` アノテーションをアノテーションプロセッサ (Kotlin では kapt) で処理して生成しますが、kapt はスタブ生成とアノテーション処理の分だけコンパイルが遅くなります。
+そのため、このテンプレートでは Paper の `paper-plugin.yml` と同じく [resource-factory](https://github.com/jpenilla/resource-factory) で Gradle から生成しています。
+
+```kotlin
+// velocity/build.gradle.kts
+plugins {
+    alias(libs.plugins.resource.factory)
+}
+
+sourceSets.main {
+    resourceFactory {
+        velocityPluginJson {
+            id = "pluginname"
+            name = rootProject.name
+            version = project.version.toString()
+            description = "A Minecraft plugin template"
+            authors.add("morinoparty")
+            main = "$group.pluginname.velocity.PluginName"
+        }
+    }
+}
+```
+
+`version` は `gradle.properties` の `version` と連動します。
+依存プラグインを追加する場合は、`velocityPluginJson` の中で `dependency("id", optional)` を指定してください。
+生成された `velocity-plugin.json` はビルド後の JAR に含まれます。

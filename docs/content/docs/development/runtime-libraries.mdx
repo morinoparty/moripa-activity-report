@@ -1,0 +1,64 @@
+---
+title: Runtime Libraries
+description: 依存ライブラリを JAR に同梱せず、Paper に実行時に取得させる仕組み
+---
+
+# 実行時ライブラリ
+
+Paper 向けの JAR には、Kotlin 標準ライブラリや kotlinx-coroutines、Koin などの依存ライブラリを同梱していません。
+これらはサーバー起動時に `PluginNameLoader` が Paper の `MavenLibraryResolver` を通じて Maven Central のミラーから取得します。
+これにより JAR のサイズは約 9MB から約 1MB に削減されています。
+
+## 仕組み
+
+1. ビルド時に `paper/build.gradle.kts` の `generatePaperLibraries` タスクが、`runtimeClasspath` を解決して `paper-libraries.txt` を生成します。
+2. `shadowJar` は、同梱対象以外の外部依存を JAR から除外します。
+3. サーバー起動時に `PluginNameLoader` が `paper-libraries.txt` を読み込み、記載されたライブラリを Paper に取得させます。
+
+`paper-libraries.txt` には 1 行に 1 つの Maven 座標 (`group:artifact:version`) が記載されます。
+依存の追加や更新に合わせて自動で再生成されるため、手で編集する必要はありません。
+
+```text
+org.jetbrains.kotlin:kotlin-stdlib:2.4.20
+org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0
+io.insert-koin:koin-core-jvm:4.2.2
+...
+```
+
+## JAR に同梱する依存
+
+次の条件に当てはまる依存は、実行時に取得できないため JAR に同梱します。
+条件は `paper/build.gradle.kts` の `isBundled` 関数で定義しています。
+
+| 条件 | 理由 |
+|------|------|
+| グループが `party.morino` | `common` / `api` モジュールはプロジェクト内のコードであるため |
+| バージョンが `-SNAPSHOT` で終わる | cloud のスナップショット版などは Maven Central のミラーに存在しないため |
+
+Maven Central に存在しない依存や、リロケートが必要な依存を追加した場合は、`isBundled` に条件を追加してください。
+
+```kotlin
+// paper/build.gradle.kts
+fun isBundled(
+    group: String,
+    version: String,
+): Boolean =
+    group == "party.morino" ||
+        version.endsWith("-SNAPSHOT")
+```
+
+## PluginNameLoader を Java で記述している理由
+
+`PluginNameLoader` はプラグイン本体より先に実行され、Kotlin 標準ライブラリ自体もここで取得します。
+そのため Kotlin で記述すると、Kotlin 標準ライブラリがクラスパスに存在しない状態で `kotlin.jvm.internal.Intrinsics` などを参照してしまい、読み込みに失敗します。
+これを避けるために、`paper/src/main/java/` に Java で記述しています。
+
+## CI でのチェック
+
+Paper が参照する Maven Central のミラー (`maven-central.storage-download.googleapis.com`) は、Maven Central 本体より反映が遅れることがあります。
+未反映のバージョンを指定するとサーバーが起動できなくなるため、`check_pull_request.yml` で `paper-libraries.txt` の全ライブラリがミラーに存在するかを確認しています。
+
+## Velocity について
+
+Velocity には Paper の `PluginLoader` に相当する仕組みがないため、Velocity 向けの JAR では従来どおり依存を同梱しています。
+ただし Kotlin 標準ライブラリ、kotlinx-coroutines、kotlinx-serialization は、サーバーに導入された Kotlin 言語プラグインなどから提供される前提で除外しています。

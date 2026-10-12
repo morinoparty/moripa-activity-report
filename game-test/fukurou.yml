@@ -1,0 +1,5 @@
+# fukurou のテストスイート (https://github.com/morinoparty/fukurou)
+scenarios:
+  - scenarios/*.json # 1 ファイルが 1 テスト。テスト id はファイル名 (拡張子なし)
+players:
+  - { name: Alice, op: true }
