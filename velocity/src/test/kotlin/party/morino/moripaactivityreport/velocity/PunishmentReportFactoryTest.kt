@@ -36,15 +36,23 @@ class PunishmentReportFactoryTest {
     @Test
     @DisplayName("Shows the punishment type, duration and reason")
     fun createsPunishmentReport() {
-        // 7 日間の BAN は ISO-8601 の期間で表示する
         val ban = PunishmentReportFactory.createPunishment(null, target, PunishmentType.BAN, start, start.plusSeconds(7 * 24 * 3600), "荒らし")
         assertEquals(
-            listOf(ReportField("処罰", "BAN"), ReportField("期間", "PT168H"), ReportField("理由", "荒らし")),
+            listOf(ReportField("処罰", "BAN"), ReportField("期間", "7日"), ReportField("理由", "荒らし")),
             ban.fields,
         )
-        // 無期限の処罰は PT0S になる
         val permanent = PunishmentReportFactory.createPunishment(null, target, PunishmentType.WARN, start, null, "警告")
-        assertEquals(ReportField("期間", "PT0S"), permanent.fields[1])
+        assertEquals(ReportField("期間", "無期限"), permanent.fields[1])
+        // キックは期間を持たないため、期間の欄を出さない
+        val kick = PunishmentReportFactory.createPunishment(null, target, PunishmentType.KICK, start, null, "チュートリアル未完了")
+        assertEquals(listOf("処罰", "理由"), kick.fields.map { it.name })
+    }
+
+    @Test
+    @DisplayName("Formats the duration in Japanese units")
+    fun formatsDuration() {
+        assertEquals("1日 12時間", PunishmentReportFactory.formatDuration(start, start.plusSeconds(36 * 3600)))
+        assertEquals("30分", PunishmentReportFactory.formatDuration(start, start.plusSeconds(30 * 60)))
     }
 
     @Test

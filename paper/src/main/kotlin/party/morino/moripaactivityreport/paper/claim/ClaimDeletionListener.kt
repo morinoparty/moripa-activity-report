@@ -49,13 +49,13 @@ class ClaimDeletionListener(
     private val reporter: ActivityReporter by inject()
     private val ticketCloser: TicketCloser by inject()
 
-    /** 実行中の理由付きの /deleteclaim (コマンドの実行中だけ値を持つ) */
+    /** 実行中の /deleteclaim (コマンドの実行中だけ値を持つ) */
     private var pending: PendingClaimDeletion? = null
 
     /**
      * /deleteclaim の理由を受け取る
      *
-     * 理由が無い場合は実行させずに使い方を伝える (削除の経緯を必ず残すため)。
+     * 理由は任意。省略された場合も削除は報告し、理由の欄は空 (「-」) にする。
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onCommand(event: PlayerCommandPreprocessEvent) {
@@ -66,11 +66,6 @@ class ClaimDeletionListener(
         // 権限が無い場合は GriefPrevention にそのまま断らせる
         if (!player.hasPermission(DELETE_CLAIMS_PERMISSION)) return
         val reason = parts.getOrNull(1)?.trim().orEmpty()
-        if (reason.isEmpty()) {
-            event.isCancelled = true
-            player.sendRichMessage("<red>削除する理由を入力してください: /deleteclaim \\<理由>")
-            return
-        }
         val deletion = PendingClaimDeletion(player, reason)
         pending = deletion
         // コマンドはこのイベントの直後に同じ tick で実行されるため、次の tick で削除結果をまとめて扱う
@@ -78,7 +73,7 @@ class ClaimDeletionListener(
     }
 
     /**
-     * 理由付きの /deleteclaim の実行中に削除された土地保護を記録する
+     * /deleteclaim の実行中に削除された土地保護を記録する
      */
     @EventHandler(priority = EventPriority.MONITOR)
     fun onClaimDeleted(event: ClaimDeletedEvent) {

@@ -51,11 +51,14 @@ object PunishmentReportFactory {
         executor = executor,
         target = target,
         color = colorOf(type),
-        fields = listOf(
-            ReportField("処罰", type.name),
-            ReportField("期間", durationOf(start, end).toString()),
-            ReportField("理由", reason),
-        ),
+        fields = buildList {
+            add(ReportField("処罰", type.name))
+            // キックはその場で切断するだけで期間を持たないため、期間の欄を出さない
+            if (type != PunishmentType.KICK) {
+                add(ReportField("期間", formatDuration(start, end)))
+            }
+            add(ReportField("理由", reason))
+        },
     )
 
     /**
@@ -74,16 +77,27 @@ object PunishmentReportFactory {
     )
 
     /**
-     * 処罰の期間を求める (外部状態に依存しない純粋関数)
+     * 処罰の期間を表示用の文字列にする (外部状態に依存しない純粋関数)
      *
-     * 無期限の処罰とキックは期間を持たないため 0 (PT0S と表示される) にする。
+     * 0 の単位は省いて「7日」「1日 12時間」「30分」のように表す。
      *
      * @param start 処罰の開始日時
      * @param end 処罰の終了日時 (無期限の場合は null)
-     * @return 処罰の期間
+     * @return 表示用の文字列 (無期限の場合は「無期限」)
      */
-    fun durationOf(start: Instant, end: Instant?): Duration =
-        if (end == null) Duration.ZERO else Duration.between(start, end).coerceAtLeast(Duration.ZERO)
+    fun formatDuration(start: Instant, end: Instant?): String {
+        if (end == null) return "無期限"
+        val duration = Duration.between(start, end).coerceAtLeast(Duration.ZERO)
+        val parts = listOf(
+            duration.toDaysPart() to "日",
+            duration.toHoursPart().toLong() to "時間",
+            duration.toMinutesPart().toLong() to "分",
+            duration.toSecondsPart().toLong() to "秒",
+        ).filter { (value, _) -> value > 0 }
+            .map { (value, unit) -> "$value$unit" }
+        // 1 秒未満の処罰は通常ありえないが、空欄にはしない
+        return parts.joinToString(" ").ifEmpty { "0秒" }
+    }
 
     /**
      * 処罰の種類ごとの Embed の色を返す

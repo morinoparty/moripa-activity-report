@@ -1,7 +1,7 @@
 [versions]
-paper = "26.2.build.129-stable"
+paper = "26.2.build.132-stable"
 velocity = "4.2.0"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 mccoroutine = "2.23.0"
 cloud = "2.2.0-SNAPSHOT"
 cloudPaper = "2.1.0-SNAPSHOT"
@@ -11,7 +11,7 @@ serialization = "1.11.0"
 ktlint = "14.2.0"
 mockk = "1.14.11"
 junit = "6.1.3"
-mockBukkit = "4.116.1"
+mockBukkit = "4.117.0"
 # 土地保護 (claim) の削除を報告する。実行時は GriefPrevention プラグイン側のクラスを使う
 griefprevention = "16.18.7"
 # チケットのクローズに使う MoripaUtils の公開 API (JitPack)。リリース前のため PR #34 のコミットを指定している
@@ -59,7 +59,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version = "2.2.0" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
-spotless = { id = "com.diffplug.spotless", version = "8.10.3" }
+spotless = { id = "com.diffplug.spotless", version = "8.10.4" }
 
 [bundles]
 commands-paper = ["cloud", "cloudPaper", "cloud-annotations", "cloud-kotlin-coroutines-annotations"]
