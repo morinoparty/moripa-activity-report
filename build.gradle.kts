@@ -54,6 +54,16 @@ allprojects {
         maven("https://jitpack.io")
         maven("https://plugins.gradle.org/m2/")
         maven("https://repo.codemc.io/repository/maven-public/")
+        // MoripaUtils の公開 API (party.morino:moripa-utils-api)。GitHub Packages は公開パッケージでも取得に認証が必要なため、
+        // 手元では ~/.gradle/gradle.properties の gpr.user / gpr.key、GitHub Actions では GITHUB_ACTOR / GITHUB_TOKEN を使う
+        maven("https://maven.pkg.github.com/morinoparty/moripa-utils") {
+            credentials {
+                username = providers.gradleProperty("gpr.user").orElse(providers.environmentVariable("GITHUB_ACTOR")).orNull
+                password = providers.gradleProperty("gpr.key").orElse(providers.environmentVariable("GITHUB_TOKEN")).orNull
+            }
+            // このリポジトリには MoripaUtils の API しか無いため、他の依存の解決で問い合わせないようにする
+            content { includeModule("party.morino", "moripa-utils-api") }
+        }
         // LibertyBans の API (bans-api) と、それが依存する Omnibus
         maven("https://mvn-repo.arim.space/affero-gpl3/")
         maven("https://mvn-repo.arim.space/lesser-gpl3/")

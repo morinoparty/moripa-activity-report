@@ -8,13 +8,15 @@ permissions:
   contents: write
   id-token: write
   attestations: write
+  # GitHub Packages から moripa-utils-api を取得するため
+  packages: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
+      GITHUB_ACTOR: ${{ github.actor }}
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

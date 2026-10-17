@@ -1,0 +1,30 @@
+---
+title: GitHub Packages
+description: MoripaUtils の公開 API を GitHub Packages から取得するための認証
+---
+
+# GitHub Packages
+
+MoripaActivityReport は、チケットのクローズに MoripaUtils の公開 API (`party.morino:moripa-utils-api`) を使用します。
+この API は [GitHub Packages](https://github.com/morinoparty/moripa-utils/packages) で配布されており、公開パッケージであっても取得に GitHub のトークンが必要です。
+
+## 手元でビルドする場合
+
+`read:packages` 権限を持つトークンを `~/.gradle/gradle.properties` に設定します。
+GitHub CLI を使っている場合は、`gh auth token` で表示されるトークンも使用できます。
+
+```properties title="~/.gradle/gradle.properties"
+gpr.user=<GitHub のユーザー名>
+gpr.key=<read:packages 権限を持つトークン>
+```
+
+`gradle.properties` の代わりに、環境変数 `GITHUB_ACTOR` と `GITHUB_TOKEN` で渡すこともできます。
+
+## GitHub Actions
+
+Gradle を実行するワークフローには `permissions: packages: read` を付け、`GITHUB_ACTOR` と `GITHUB_TOKEN` を環境変数に設定しています。
+
+## バージョンの更新
+
+MoripaUtils のリリースを公開すると、API が GitHub Packages に publish されます。
+`gradle/libs.versions.toml` の `moripaUtils` を、リリースのタグから `v` を除いたバージョン (例: `0.1.11`) に更新してください。
