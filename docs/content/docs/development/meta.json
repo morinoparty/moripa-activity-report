@@ -2,6 +2,7 @@
     "title": "開発",
     "pages": [
         "runtime-libraries",
+        "github-packages",
         "build-constants",
         "license-header",
         "game-test",
