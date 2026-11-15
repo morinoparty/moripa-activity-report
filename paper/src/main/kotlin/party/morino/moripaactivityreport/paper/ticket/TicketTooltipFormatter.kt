@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter
 /**
  * チケット番号の Tab 補完の tooltip に表示する概要を組み立てる
  *
- * MoripaUtils の /ticket の補完 (TicketSummaryText) と同じ形にする。
- * ただし公開 API からはカテゴリーの表示名が取れないため、カテゴリーは id で表示する。
+ * MoripaUtils の /ticket の補完 (TicketSummaryText) に倣う。
+ * ただし候補は未対応のチケットだけなので対応状況は省き、公開 API からはカテゴリーの表示名が取れないため、カテゴリーは id で表示する。
  */
 object TicketTooltipFormatter {
     /** 本文のプレビューの最大文字数 */

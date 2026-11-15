@@ -54,12 +54,13 @@ class DeleteClaimTabCompleter : Listener, KoinComponent {
             // チケットの取得はデータベースを待つため、非同期で呼ばれた場合だけ行う
             if (event.isAsynchronous) ticketSuggester.openTickets(player) else emptyList()
         }
+        // 候補が無い場合は、プレイヤー名などの既定の補完に任せる
+        if (suggestions.isEmpty()) return
         event.completions(
             suggestions.map { suggestion ->
                 AsyncTabCompleteEvent.Completion.completion(suggestion.text, suggestion.tooltip?.let(Component::text))
             },
         )
-        // 理由の補完ではプレイヤー名などの既定の候補を出さない
         event.isHandled = true
     }
 }
