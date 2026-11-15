@@ -10,6 +10,13 @@ on:
 permissions:
   statuses: write
   contents: read
+  # GitHub Packages から moripa-utils-api を取得するため
+  packages: read
+
+env:
+  # GitHub Packages の moripa-utils-api の取得に使う (公開パッケージでも認証が必要)
+  GITHUB_ACTOR: ${{ github.actor }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
