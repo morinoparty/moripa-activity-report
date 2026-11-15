@@ -28,9 +28,10 @@ import org.bukkit.plugin.Plugin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import party.morino.moripaactivityreport.common.model.report.ReportActor
+import party.morino.moripaactivityreport.common.report.SilentFlagParser
+import party.morino.moripaactivityreport.common.ticket.TicketCloseDirectiveParser
 import party.morino.moripaactivityreport.common.webhook.ActivityReporter
 import party.morino.moripaactivityreport.paper.model.claim.DeletedClaim
-import party.morino.moripaactivityreport.common.ticket.TicketCloseDirectiveParser
 import party.morino.moripaactivityreport.paper.ticket.TicketCloser
 import java.time.Instant
 
@@ -56,6 +57,7 @@ class ClaimDeletionListener(
      * /deleteclaim の理由を受け取る
      *
      * 理由は任意。省略された場合も削除は報告し、理由の欄は空 (「-」) にする。
+     * 理由に「--silent」が含まれる場合は、それを取り除き、削除を Discord に報告しない。
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     fun onCommand(event: PlayerCommandPreprocessEvent) {
@@ -65,8 +67,8 @@ class ClaimDeletionListener(
         val player = event.player
         // 権限が無い場合は GriefPrevention にそのまま断らせる
         if (!player.hasPermission(DELETE_CLAIMS_PERMISSION)) return
-        val reason = parts.getOrNull(1)?.trim().orEmpty()
-        val deletion = PendingClaimDeletion(player, reason)
+        val flag = SilentFlagParser.parse(parts.getOrNull(1).orEmpty())
+        val deletion = PendingClaimDeletion(player, flag.reason, flag.silent)
         pending = deletion
         // コマンドはこのイベントの直後に同じ tick で実行されるため、次の tick で削除結果をまとめて扱う
         Bukkit.getScheduler().runTask(plugin, Runnable { finish(deletion) })
@@ -84,6 +86,7 @@ class ClaimDeletionListener(
      * コマンドの実行が終わった後に、削除された土地保護を報告し、指示されたチケットをクローズする
      *
      * サブディビジョンを含む土地保護では 1 回目の /deleteclaim は警告だけで削除されないため、その場合は何もしない。
+     * 「--silent」が指定されていた場合は報告だけを行わず、チケットのクローズは行う。
      *
      * @param deletion 実行された /deleteclaim の記録
      */
@@ -93,9 +96,11 @@ class ClaimDeletionListener(
         val roots = deletion.rootClaims()
         if (roots.isEmpty()) return
 
-        val executor = ReportActor(deletion.player.name, deletion.player.uniqueId)
-        roots.forEach { claim ->
-            reporter.report(ClaimDeletionReportFactory.create(executor, snapshot(claim), lastSeenOf(claim), deletion.reason))
+        if (!deletion.silent) {
+            val executor = ReportActor(deletion.player.name, deletion.player.uniqueId)
+            roots.forEach { claim ->
+                reporter.report(ClaimDeletionReportFactory.create(executor, snapshot(claim), lastSeenOf(claim), deletion.reason))
+            }
         }
 
         val directive = TicketCloseDirectiveParser.parse(deletion.reason)
@@ -134,9 +139,9 @@ class ClaimDeletionListener(
 
     companion object {
         /** 横取りするコマンド名 (GriefPrevention の名前空間付きも含む) */
-        private val DELETE_CLAIM_COMMANDS = setOf("deleteclaim", "griefprevention:deleteclaim")
+        internal val DELETE_CLAIM_COMMANDS = setOf("deleteclaim", "griefprevention:deleteclaim")
 
         /** GriefPrevention の /deleteclaim の権限 */
-        private const val DELETE_CLAIMS_PERMISSION = "griefprevention.deleteclaims"
+        internal const val DELETE_CLAIMS_PERMISSION = "griefprevention.deleteclaims"
     }
 }

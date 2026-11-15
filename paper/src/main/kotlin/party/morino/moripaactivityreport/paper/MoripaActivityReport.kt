@@ -26,9 +26,13 @@ import party.morino.moripaactivityreport.common.MoripaActivityReportCommon
 import party.morino.moripaactivityreport.common.config.ActivityReportConfigLoader
 import party.morino.moripaactivityreport.common.webhook.ActivityReporter
 import party.morino.moripaactivityreport.paper.claim.ClaimDeletionListener
+import party.morino.moripaactivityreport.paper.claim.DeleteClaimTabCompleter
 import party.morino.moripaactivityreport.paper.ticket.MoripaUtilsTicketCloser
+import party.morino.moripaactivityreport.paper.ticket.MoripaUtilsTicketSuggester
 import party.morino.moripaactivityreport.paper.ticket.TicketCloser
+import party.morino.moripaactivityreport.paper.ticket.TicketSuggester
 import party.morino.moripaactivityreport.paper.ticket.UnavailableTicketCloser
+import party.morino.moripaactivityreport.paper.ticket.UnavailableTicketSuggester
 import java.io.IOException
 
 /**
@@ -48,6 +52,7 @@ open class MoripaActivityReport : SuspendingJavaPlugin() {
         // GriefPrevention は任意依存。API のクラスに触れる前に、導入されているかを Bukkit の API だけで確認する
         if (server.pluginManager.getPlugin(GRIEF_PREVENTION_PLUGIN_NAME) != null) {
             server.pluginManager.registerEvents(ClaimDeletionListener(this), this)
+            server.pluginManager.registerEvents(DeleteClaimTabCompleter(), this)
             logger.info("GriefPrevention is installed; /deleteclaim <reason> is reported to Discord")
         } else {
             logger.info("GriefPrevention is not installed; claim deletion reports are disabled")
@@ -92,6 +97,7 @@ open class MoripaActivityReport : SuspendingJavaPlugin() {
             single<MoripaActivityReport> { this@MoripaActivityReport }
             single { reporter }
             single<TicketCloser> { createTicketCloser() }
+            single<TicketSuggester> { createTicketSuggester() }
         }
 
         getOrNull() ?: GlobalContext.startKoin {
@@ -109,6 +115,18 @@ open class MoripaActivityReport : SuspendingJavaPlugin() {
             MoripaUtilsTicketCloser(logger)
         } else {
             UnavailableTicketCloser()
+        }
+
+    /**
+     * MoripaUtils の有無に応じて、Tab 補完の候補にするチケットを集める方法を選ぶ
+     *
+     * @return MoripaUtils が導入されていればその公開 API を使う実装、無ければ候補を出さない実装
+     */
+    private fun createTicketSuggester(): TicketSuggester =
+        if (server.pluginManager.getPlugin(MORIPA_UTILS_PLUGIN_NAME) != null) {
+            MoripaUtilsTicketSuggester(logger)
+        } else {
+            UnavailableTicketSuggester()
         }
 
     companion object {

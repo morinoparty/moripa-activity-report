@@ -8,6 +8,10 @@ description: LibertyBans の処罰と処罰の解除を Discord に報告する
 LibertyBans が導入されている Velocity では、処罰と処罰の解除が Discord に報告されます。
 処罰が確定した後に報告するため、他のプラグインによって取り消された処罰は報告されません。
 
+LibertyBans の silent (`-s`) で行った処罰と処罰の解除は、Discord に報告されません (例: `/ban Steve -s 7d 荒らし`)。
+LibertyBans と同じく、silent の権限 (例: `libertybans.ban.do.silent`) を持たない場合は `-s` を付けても silent にならず、報告されます。
+`close #番号` によるチケットのクローズは、silent でも行われます。
+
 ## 処罰
 
 BAN・ミュート・警告・キックが報告されます。

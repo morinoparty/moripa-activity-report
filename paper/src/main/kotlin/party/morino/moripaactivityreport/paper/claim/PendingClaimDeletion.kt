@@ -26,11 +26,13 @@ import org.bukkit.entity.Player
  * コマンドの実行中に発生した削除イベントを集め、次の tick でまとめて報告する。
  *
  * @property player 実行したプレイヤー
- * @property reason 入力された理由 (省略された場合は空文字)
+ * @property reason 入力された理由 (「--silent」を取り除いたもの。省略された場合は空文字)
+ * @property silent 「--silent」が指定されたかどうか (指定された場合は Discord に報告しない)
  */
 class PendingClaimDeletion(
     val player: Player,
     val reason: String,
+    val silent: Boolean = false,
 ) {
     /** コマンドの実行中に削除された土地保護 (親の削除に伴って削除された子も含む) */
     val deletedClaims: MutableList<Claim> = mutableListOf()
