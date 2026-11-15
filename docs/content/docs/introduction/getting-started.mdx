@@ -1,50 +1,48 @@
 ---
 title: Getting Started
-description: テンプレートからプラグインを作成し、ビルドして動かすまでの手順
+description: MoripaActivityReport を導入し、Discord に報告を送るまでの手順
 ---
 
 # はじめに
 
-このページでは、テンプレートから新しいプラグインを作成し、ビルドして開発サーバーで動かすまでの手順を説明します。
+このページでは、MoripaActivityReport をサーバーに導入し、Discord に報告を送れるようにするまでの手順を説明します。
 
-## 必要環境
+## 動作環境
 
-| ツール | バージョン | 用途 |
-|--------|-----------|------|
-| Java | 25 (Temurin 推奨) | Gradle ビルド |
-| Node.js / pnpm | 26+ / 10+ | ドキュメントのビルド |
-| [Task](https://taskfile.dev/) | 任意 | タスクランナー |
+| 環境 | 必要なもの | 連携するプラグイン (任意) |
+|------|-----------|--------------------------|
+| Paper | Paper 26.2 以降、Java 25 | GriefPrevention (土地保護の削除の報告)、MoripaUtils (チケットのクローズ) |
+| Velocity | Velocity、Java 25 | LibertyBans (処罰の報告)、MoripaUtils (チケットのクローズ) |
 
-## プロジェクト名の変更
+連携するプラグインはどれも任意です。導入されていないプラグインに関する機能だけが無効になります。
 
-GitHub の "Use this template" ボタンからリポジトリを作成したあと、プレースホルダーを自分のプラグイン名に置き換えます。
-主な変更箇所は次のとおりです。詳細なチェックリストはリポジトリの `README.md` を参照してください。
+## 導入
 
-- `settings.gradle.kts` の `rootProject.name`
-- パッケージ名 `party.morino.moripaactivityreport` とソースディレクトリ名
-- `common/build.gradle.kts` の `basePackage` (BuildConstants の生成先)
-- クラス名 `MoripaActivityReport` / `MoripaActivityReportLoader` / `MoripaActivityReportBootstrap` など
-- `paper/build.gradle.kts` の `paperPluginYaml` (main / bootstrapper / loader のクラスパス、website)
+1. [GitHub Releases](https://github.com/morinoparty/moripa-activity-report/releases) から JAR をダウンロードします。
+    - Paper: `MoripaActivityReport-paper-<バージョン>.jar`
+    - Velocity: `MoripaActivityReport-velocity-<バージョン>.jar`
+2. JAR を各サーバーの `plugins/` に置き、サーバーを起動します。初回起動時に `config.json` が作成されます。
+3. `config.json` の `webhook.url` に Discord Webhook の URL を設定し、`/mar reload` (Paper) または `/marv reload` (Velocity) で反映します。
 
-## ビルド
+設定の項目は [設定](/config) を参照してください。
+
+Paper 版は、JAR に同梱していない依存ライブラリを初回起動時にダウンロードします。
+仕組みについては [実行時ライブラリ](/development/runtime-libraries) を参照してください。
+
+## ソースからのビルド
+
+ビルドには Java 25 が必要です。[Task](https://taskfile.dev/) を使う場合は `task build` でも実行できます。
 
 ```bash
 ./gradlew build -x test
-
-# または Task を使用
-task build
 ```
 
 Paper 向けの JAR は `paper/build/libs/*-all.jar`、Velocity 向けの JAR は `velocity/build/libs/*-all.jar` に出力されます。
 
-## 開発サーバーの起動
+開発用の Paper サーバーは、次のコマンドで起動できます。
 
 ```bash
 ./gradlew :paper:runServer
-
-# または Task を使用
-task run
 ```
 
-初回起動時は、JAR に同梱していない依存ライブラリを Paper がダウンロードします。
-仕組みについては [実行時ライブラリ](/docs/development/runtime-libraries) を参照してください。
+ドキュメントサイトのビルドには Node.js 26 以降と pnpm 10 以降が必要です。詳しくは [ドキュメントサイト](/development/docs-site) を参照してください。
