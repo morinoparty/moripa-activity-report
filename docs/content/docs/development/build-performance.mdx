@@ -5,7 +5,7 @@ description: ビルドキャッシュと configuration cache によるビルド�
 
 # ビルドの高速化
 
-このテンプレートでは、Gradle のビルドキャッシュと configuration cache を有効にして、ローカルと CI のビルドを高速化しています。
+このプロジェクトでは、Gradle のビルドキャッシュと configuration cache を有効にして、ローカルと CI のビルドを高速化しています。
 
 ## ビルドキャッシュ
 
@@ -49,3 +49,8 @@ openssl rand -base64 16
 ```
 
 シークレットが未設定の場合も CI は失敗せず、configuration cache が保存されないだけです。
+
+## ドキュメントサイトのビルド
+
+ドキュメントサイト (`docs/`) は Vite+ (`vp build`) でビルドしています。
+構成とコマンドについては [ドキュメントサイト](/development/docs-site) を参照してください。

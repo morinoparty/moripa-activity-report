@@ -1,0 +1,97 @@
+---
+title: Docs Site
+description: Fumadocs + TanStack Start + Vite+ で構成したドキュメントサイトの構成とコマンド
+---
+
+# ドキュメントサイト
+
+このドキュメントサイトは `docs/` にある単独の pnpm プロジェクトです。
+[Fumadocs](https://fumadocs.dev/) を [TanStack Start](https://tanstack.com/start) の上で動かし、[Vite+](https://viteplus.dev/) (`vp`) で開発サーバーの起動、ビルド、フォーマット、リントを行います。
+ビルドではすべてのページをプリレンダーし、静的サイトとして `docs/out` に出力します。
+
+## コマンド
+
+| コマンド | 内容 |
+|---------|------|
+| `pnpm dev` | 開発サーバーを起動する (`vp dev`、`http://localhost:3000/`) |
+| `pnpm build` | 静的サイトを `docs/out` に出力する (`vp build`) |
+| `pnpm preview` | ビルドしたサイトを確認する (`vp preview`) |
+| `pnpm check` | フォーマットとリントを行い、修正できるものは修正する (`vp check --fix`) |
+| `pnpm check:ci` | フォーマットとリントを検証する (`vp check`) |
+| `pnpm typecheck` | 型チェックを行う (`tsc --noEmit`) |
+
+リポジトリ直下からは `task docs` (`pnpm install` + `pnpm dev`) と `task docs:build` (`pnpm install` + `pnpm build`) でも実行できます。
+`docs/` を変更した場合は、`pnpm check:ci`、`pnpm typecheck`、`pnpm build` が通ることを確認してください。
+
+CI (`check_pull_request.yml` の `docs` ジョブ) でも `pnpm check:ci` と `pnpm typecheck` を実行します。GitHub Actions では [`voidzero-dev/setup-vp`](https://github.com/voidzero-dev/setup-vp) で Vite+・Node (`docs/.node-version`)・pnpm (`docs/package.json` の `packageManager`) をまとめて準備し、依存を `--frozen-lockfile` で install します。
+
+## 構成
+
+| パス | 役割 |
+|------|------|
+| `content/docs/` | ドキュメント本文 (MDX) とサイドバーの構成 (`meta.json`) |
+| `src/routes/` | TanStack Start のルート (ドキュメントページ、検索インデックス、`llms.txt` など) |
+| `src/lib/shared.ts` | サイト名と GitHub リポジトリ |
+| `src/lib/source.ts` | Fumadocs のソースの定義と、サイドバーで使うアイコンの対応表 |
+| `src/styles/` | Tailwind CSS (fumadocs-ui) と Chlorophyll のデザイントークンの CSS |
+| `vite.config.ts` | Vite+ の設定 (プラグイン、プリレンダー、フォーマット、リント) |
+| `pnpm-workspace.yaml` | Vite+ のバージョン (catalog) と pnpm の設定 |
+| `panda.config.ts` | Chlorophyll のプリセットからデザイントークンを生成する Panda CSS の設定 |
+| `source.config.ts` | すべての MDX に共通する remark プラグインの設定 |
+| `public/` | そのまま出力される静的ファイル (Dokka の出力先 `dokka/`。git には含めない) |
+
+`src/routeTree.gen.ts` はルートから自動生成されるファイルです。手で編集しないでください。
+
+## ページの追加
+
+1. `content/docs/` の該当するディレクトリに MDX ファイルを追加します。
+2. 同じディレクトリの `meta.json` の `pages` にファイル名 (拡張子なし) を追加します。
+
+MDX では、`mermaid` のコードブロックで図を描けるほか、`:::note` や `:::warning` などのディレクティブで注意書きを表示できます。
+
+### アイコン
+
+`meta.json` の区切り (`---[Rocket]はじめに---` など) やページのフロントマターでは、[Lucide](https://lucide.dev/icons/) のアイコンを名前で指定できます。
+ただし、ブラウザに読み込むアイコンを減らすために、使えるアイコンは `src/lib/source.ts` の対応表に登録したものだけにしています。
+新しいアイコンを使う場合は、対応表に追加してください。
+
+```ts
+// src/lib/source.ts
+import { Hammer, Rocket } from "lucide-react";
+
+const icons = { Hammer, Rocket };
+```
+
+## デザイン
+
+色のデザイントークンは、morinoparty のデザインシステム [Chlorophyll](https://github.com/morinoparty/Chlorophyll) (`@morinoparty/chlorophyll-react`) のものを使っています。
+`panda.config.ts` で Chlorophyll の Panda CSS プリセットからトークンだけを取り出し、CSS 変数 (`--mpc-colors-mori-*` など) として出力しています。
+コンポーネントは fumadocs-ui のものを使い、色をこれらの CSS 変数で上書きしています。ダークモードは提供せず、ライトテーマ固定です。
+サイドバーやヘッダーのボタンの大きさ・配置、選択中のページの色は、[MineAuth のドキュメント](https://mineauth.plugin.morino.party/docs/) にそろえて `src/styles/app.css` で上書きしています。
+
+## 公開先と BASE_PATH
+
+| 公開先 | ワークフロー | 配置するパス |
+|--------|-------------|-------------|
+| GitHub Pages | `deploy_docs.yml` (main への push で `docs/` が変更されたとき) | Pages の公開パス (`actions/configure-pages` の `base_path`。カスタムドメインならルート、`https://<owner>.github.io/<repo>/` なら `/<repo>`) |
+| プレビュー (S3) | `preview.yml` (プルリクエスト) | `/MoripaActivityReport/<コミット SHA>/docs` |
+
+ドキュメントはサイトのルート (`BASE_PATH` 直下) に配置されます。トップページ (`<BASE_PATH>/`) が `content/docs/index.mdx` で、`content/docs/introduction/getting-started.mdx` は `<BASE_PATH>/introduction/getting-started/` になります。
+MDX から別のページへリンクするときは、`[Getting Started](/introduction/getting-started)` のように `BASE_PATH` を含まないパスで書きます (`BASE_PATH` はルーターが付けます)。
+
+サブパスに配置する場合は、ビルド時に環境変数 `BASE_PATH` を指定します。リンクやアセットの URL、検索インデックスの URL にこのパスが付きます。
+
+```bash
+BASE_PATH=/MoripaActivityReport/abc1234/docs pnpm build
+```
+
+## 出力されるファイル
+
+| パス | 内容 |
+|------|------|
+| `index.html` | ドキュメントのトップページ (`content/docs/index.mdx`) |
+| `**/index.html` | 各ドキュメントページ (例: `introduction/getting-started/index.html`) |
+| `api/search.json` | 検索インデックス (検索はブラウザ内で行う) |
+| `llms.txt` / `llms-full.txt` | LLM 向けのページ一覧と全文 |
+| `404.html` | 存在しない URL で GitHub Pages が返すページ (`src/routes/404.tsx`) |
+| `dokka/` | Dokka の API ドキュメント (`./gradlew dokkaGenerate` で `public/dokka` に生成した場合) |

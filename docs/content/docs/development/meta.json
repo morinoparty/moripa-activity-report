@@ -5,6 +5,7 @@
         "build-constants",
         "license-header",
         "game-test",
-        "build-performance"
+        "build-performance",
+        "docs-site"
     ]
 }

@@ -5,7 +5,7 @@ description: Gradle が生成するビルド時定数と Velocity の velocity-p
 
 # ビルド時定数 (BuildConstants)
 
-このテンプレートでは、ビルドのたびに Gradle が `BuildConstants.kt` を生成し、Gradle 側の値を Kotlin の `const val` として参照できるようにしています。
+このプロジェクトでは、ビルドのたびに Gradle が `BuildConstants.kt` を生成し、Gradle 側の値を Kotlin の `const val` として参照できるようにしています。
 生成処理は `common/build.gradle.kts` の `generateBuildConstants` タスクで行い、出力先は `common/build/generated/sources/buildConstants/kotlin/main/` です。
 
 ## 定数の一覧
@@ -24,7 +24,7 @@ logger.info("MoripaActivityReport v${BuildConstants.VERSION} has been enabled!")
 ## パッケージ名を変更した場合
 
 生成されるファイルのパッケージは `common/build.gradle.kts` の `basePackage` で決まります。
-テンプレートからプラグインを作成してパッケージ名を変更した際は、この値も合わせて書き換えてください。
+パッケージ名を変更した場合は、この値も合わせて書き換えてください。
 
 ```kotlin
 // common/build.gradle.kts
@@ -35,7 +35,7 @@ val basePackage = "party.morino.moripaactivityreport"
 
 Velocity はプラグインの認識に `velocity-plugin.json` を必要とします。
 通常は `@Plugin` アノテーションをアノテーションプロセッサ (Kotlin では kapt) で処理して生成しますが、kapt はスタブ生成とアノテーション処理の分だけコンパイルが遅くなります。
-そのため、このテンプレートでは Paper の `paper-plugin.yml` と同じく [resource-factory](https://github.com/jpenilla/resource-factory) で Gradle から生成しています。
+そのため、このプロジェクトでは Paper の `paper-plugin.yml` と同じく [resource-factory](https://github.com/jpenilla/resource-factory) で Gradle から生成しています。
 
 ```kotlin
 // velocity/build.gradle.kts
