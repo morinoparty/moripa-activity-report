@@ -20,6 +20,28 @@ GriefPrevention が導入されている Paper サーバーでは、`/deleteclai
 削除そのものは GriefPrevention が行うため、権限 (`griefprevention.deleteclaims`) や、サブディビジョンを含む土地保護の確認などは GriefPrevention の動作と同じです。
 サブディビジョンを含む土地保護では、1 回目の実行では警告だけが表示されるため、もう一度実行してください。報告と理由は、実際に削除された 2 回目の実行のものが使われます。
 
+## 報告しない (`--silent`)
+
+理由に `--silent` を含めると、土地保護は削除しますが Discord には報告しません。
+
+```text
+/deleteclaim 長期間放置 --silent close #2
+```
+
+- `--silent` は理由のどこに書いてもかまいません。理由とチケットのコメントからは取り除かれます (上の例では「長期間放置」)。
+- `close #番号` によるチケットのクローズは、`--silent` を付けても行われます。
+- サブディビジョンを含む土地保護では、実際に削除される 2 回目の実行に `--silent` を付けてください。
+- `griefprevention.deleteclaims` 権限を持つプレイヤーなら誰でも使えます。
+
+## Tab 補完
+
+`/deleteclaim` の理由を入力するときに、Tab 補完で次の候補が表示されます。
+
+- `close` と `--silent`
+- `close` の直後では、未対応のチケットの番号 (`#番号`)。候補にカーソルを合わせると、カテゴリー・作成日時・送信者・本文の先頭が表示されます。
+
+チケットの番号の候補は、MoripaUtils が導入されている場合だけ表示されます。`moripautils.ticket.staff` 権限を持たない場合は、自分のチケットだけが候補になります。
+
 ## チケットのクローズ
 
 理由に `close #番号` を含めると、削除と同時に [MoripaUtils](https://github.com/morinoparty/moripa-utils) のチケットをクローズします。

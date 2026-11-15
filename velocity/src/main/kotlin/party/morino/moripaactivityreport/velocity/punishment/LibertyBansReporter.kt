@@ -53,6 +53,8 @@ import java.util.logging.Logger
  * 理由の「close #番号」は、処罰が確定する前 ([PunishEvent]) に理由から取り除き、LibertyBans には保存させない。
  * 取り除いた指示は預けておき、処罰が確定した後 ([PostPunishEvent]) にチケットをクローズする。
  *
+ * silent (-s) で行われた処罰と解除は Discord に報告しない (チケットのクローズは行う)。
+ *
  * @param server 処罰した人へ結果を伝えるためのプロキシ
  * @param reporter 報告の送信窓口
  * @param ticketCloser チケットをクローズする方法
@@ -74,6 +76,9 @@ class LibertyBansReporter(
     /** 確定前の処罰の理由から取り出した、チケットのクローズの指示 */
     private val pendingTicketCloses = PendingTicketCloses()
 
+    /** silent (-s) で行われた処罰・解除かどうかを調べる */
+    private val silentDetector = SilentPunishmentDetector(logger)
+
     /**
      * 処罰と処罰の解除のイベントを購読する
      */
@@ -83,12 +88,17 @@ class LibertyBansReporter(
             extractTicketCloses(event)
         }
         // 処罰が確定した後 (Post) のイベントだけを見て、取り消された処罰を報告しない
+        // silent (-s) の処罰と解除は Discord に報告しない。チケットのクローズは silent でも行う
         listeners += omnibus.eventBus.registerListener(PostPunishEvent::class.java, ListenerPriorities.NORMAL) { event ->
-            reportPunishment(event.punishment, event.target.orElse(null))
+            if (!silentDetector.isSilent(event)) {
+                reportPunishment(event.punishment, event.target.orElse(null))
+            }
             closeTickets(event.punishment)
         }
         listeners += omnibus.eventBus.registerListener(PostPardonEvent::class.java, ListenerPriorities.NORMAL) { event ->
-            reportPardon(event.operator, event.punishment, event.target.orElse(null))
+            if (!silentDetector.isSilent(event)) {
+                reportPardon(event.operator, event.punishment, event.target.orElse(null))
+            }
         }
     }
 
