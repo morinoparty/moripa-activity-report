@@ -16,7 +16,7 @@ jobs:
   generate-dokka:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
@@ -52,7 +52,7 @@ jobs:
       # configure-pages が Pages の設定 (公開 URL) を読むために必要
       pages: read
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # GitHub Pages の公開パスを取得する
       # カスタムドメインなら "" 、https://<owner>.github.io/<repo>/ なら "/<repo>" になる
