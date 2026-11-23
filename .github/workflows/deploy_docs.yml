@@ -10,6 +10,13 @@ on:
 
 permissions:
   contents: write
+  # GitHub Packages から moripa-utils-api を取得するため (dokka が依存を解決する)
+  packages: read
+
+env:
+  # GitHub Packages の moripa-utils-api の取得に使う (公開パッケージでも認証が必要)
+  GITHUB_ACTOR: ${{ github.actor }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   # Dokka 生成ジョブ

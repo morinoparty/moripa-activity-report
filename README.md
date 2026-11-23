@@ -9,6 +9,14 @@ morinoparty のサーバー運営での操作 (アクティビティ) を Discor
 
 ## ビルド
 
+MoripaUtils の公開 API を GitHub Packages から取得するため、`read:packages` 権限を持つ GitHub のトークンが必要です。
+`~/.gradle/gradle.properties` に設定するか、環境変数 `GITHUB_ACTOR` / `GITHUB_TOKEN` で渡してください。
+
+```properties
+gpr.user=<GitHub のユーザー名>
+gpr.key=<read:packages 権限を持つトークン (gh auth token でも可)>
+```
+
 ```bash
 task build   # ./gradlew clean build
 ```
