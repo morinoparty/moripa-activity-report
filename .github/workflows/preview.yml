@@ -216,7 +216,7 @@ jobs:
   upload-s3:
     needs: [setup, build-gradle, build-docs, game-test-site]
     # in-game テストが失敗しても、ほかのレポートはアップロードする
-    if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && needs.build-gradle.result == 'success' && needs.build-docs.result == 'success' }}
+    if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]' && needs.build-gradle.result == 'success' && needs.build-docs.result == 'success' }}
     runs-on: ubuntu-latest
     env:
       COMMIT_SHORT_SHA: ${{ needs.setup.outputs.commit_sha }}
